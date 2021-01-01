@@ -37,9 +37,11 @@ class GenerateLibs extends DefaultTask {
         // Generate h/cpp files for JNI
         new NativeCodeGenerator().generate(sourceDir, classpath, jniDir)
 
-        // Copy ImGui h/cpp files
+        // Copy ImGui/Imnodes h/cpp files
         project.copy { CopySpec spec ->
             spec.from(project.rootProject.file('imgui')) { CopySpec it -> it.include('*.h', '*.cpp') }
+
+            spec.from(project.rootProject.file('imnodes')) { CopySpec it -> it.include('*.h', '*.cpp') }
 
             if (withFreeType) {
                 spec.from(project.rootProject.file('imgui/misc/freetype')) { CopySpec it -> it.include('*.h', '*.cpp') }

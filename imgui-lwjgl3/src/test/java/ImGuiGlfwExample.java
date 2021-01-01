@@ -12,6 +12,7 @@ import imgui.ImFontConfig;
 import imgui.ImGui;
 import imgui.ImGuiIO;
 import imgui.ImGuiStyle;
+import imgui.ImNodes;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiConfigFlags;
 import imgui.gl3.ImGuiImplGl3;
@@ -60,6 +61,7 @@ public final class ImGuiGlfwExample {
         imGuiGl3.dispose();
         imGuiGlfw.dispose();
 
+        ImNodes.shutdown();
         ImGui.destroyContext();
 
         disposeWindow();
@@ -137,7 +139,7 @@ public final class ImGuiGlfwExample {
         // IMPORTANT!!
         // This line is critical for Dear ImGui to work.
         ImGui.createContext();
-
+        ImNodes.initialize();
         // ------------------------------------------------------------
         // Initialize ImGuiIO config
         final ImGuiIO io = ImGui.getIO();

@@ -1,4 +1,5 @@
 import imgui.ImGuiViewport;
+import imgui.ImNodes;
 import imgui.flag.ImGuiColorEditFlags;
 import imgui.flag.ImGuiCond;
 import imgui.flag.ImGuiDir;
@@ -9,6 +10,7 @@ import imgui.internal.ImGui;
 import imgui.internal.flag.ImGuiDockNodeFlags;
 import imgui.type.ImBoolean;
 import imgui.ImColor;
+import imgui.type.ImInt;
 import imgui.type.ImString;
 import org.lwjgl.BufferUtils;
 
@@ -57,6 +59,42 @@ final class ExampleUi {
         ImGui.setNextWindowPos(mainViewport.getWorkPosX() + 10, mainViewport.getWorkPosY() + 10, ImGuiCond.Once);
 
         ImGui.begin("Custom window");  // Start Custom window
+
+        ImNodes.beginNodeEditor();
+
+
+
+        ImNodes.beginNode(1);
+        ImNodes.beginNodeTitleBar();
+        ImGui.button("Hello");
+        ImNodes.endNodeTitleBar();
+        ImGui.text("Hello Node!");
+
+        ImNodes.beginOutputAttribute(4);
+        ImGui.text("Talk!");
+        ImNodes.endOutputAttribute();
+        ImNodes.endNode();
+
+        ImNodes.beginNode(2);
+        ImGui.text("Hello End node!");
+        ImNodes.beginInputAttribute(5);
+        ImNodes.endInputAttribute();
+        ImNodes.endNode();
+
+        ImNodes.endNodeEditor();
+
+        if (ImGui.isMouseDoubleClicked(0)) {
+            final int node = ImNodes.getHoveredNode();
+            if (node != -1) {
+                System.out.println("Double clicked " + node);
+            }
+        }
+
+        final ImInt source = new ImInt();
+        final ImInt target = new ImInt();
+        if (ImNodes.isLinkCreated(source, target)) {
+            System.out.println("Created link between " + source.get() + " and " + target.get());
+        }
 
         showWindowImage();
         showToggles();
