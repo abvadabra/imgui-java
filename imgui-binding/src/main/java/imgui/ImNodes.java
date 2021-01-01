@@ -2,7 +2,7 @@ package imgui;
 
 import imgui.type.ImInt;
 
-public class ImNodes {
+public final class ImNodes {
 
     public enum ColorStyle {
         NodeBackground,
@@ -49,6 +49,8 @@ public class ImNodes {
         QuadFilled
     }
 
+    private ImNodes() { }
+
     /*JNI
         #include <stdint.h>
         #include <imgui.h>
@@ -69,7 +71,7 @@ public class ImNodes {
         imnodes::StyleColorsLight();
     */
 
-    public static void pushColorStyle(ColorStyle colorStyle, int color){
+    public static void pushColorStyle(final ColorStyle colorStyle, final int color) {
         nPushColorStyle(colorStyle.ordinal(), color);
     }
 
@@ -81,7 +83,7 @@ public class ImNodes {
         imnodes::PopColorStyle();
     */
 
-    public static void pushStyleVar(StyleVar styleVar, float value){
+    public static void pushStyleVar(final StyleVar styleVar, final float value) {
         nPushStyleVar(styleVar.ordinal(), value);
     }
 
@@ -141,11 +143,11 @@ public class ImNodes {
         imnodes::EndStaticAttribute();
     */
 
-    public static void beginInputAttribute(int id) {
+    public static void beginInputAttribute(final int id) {
         nBeginInputAttribute(id, PinShape.CircleFilled.ordinal());
     }
 
-    public static void beginInputAttribute(int id, PinShape shape){
+    public static void beginInputAttribute(final int id, final PinShape shape) {
         nBeginInputAttribute(id, shape.ordinal());
     }
 
@@ -157,11 +159,11 @@ public class ImNodes {
         imnodes::EndInputAttribute();
     */
 
-    public static void beginOutputAttribute(int id){
+    public static void beginOutputAttribute(final int id) {
         nBeginOutputAttribute(id, PinShape.CircleFilled.ordinal());
     }
 
-    public static void beginOutputAttribute(int id, PinShape pinShape) {
+    public static void beginOutputAttribute(final int id, final PinShape pinShape) {
         nBeginOutputAttribute(id, pinShape.ordinal());
     }
 
@@ -192,7 +194,7 @@ public class ImNodes {
         return imnodes::IsPinHovered(&i) ? i : -1;
     */
 
-    public static boolean isLinkCreated(ImInt source, ImInt target){
+    public static boolean isLinkCreated(final ImInt source, final ImInt target) {
         return nIsLinkCrated(source.getData(), target.getData());
     }
 
