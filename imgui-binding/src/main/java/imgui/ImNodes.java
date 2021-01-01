@@ -224,12 +224,12 @@ public final class ImNodes {
     */
 
     public static native void getNodeEditorSpacePos(int node, ImVec2 vec2); /*
-        ImVec2 result = imnodes::GetNodeScreenSpacePos(node);
+        ImVec2 result = imnodes::GetNodeEditorSpacePos(node);
         Jni::ImVec2Cpy(env, &result, vec2);
     */
 
     public static native void getNodeGridSpacePos(int node, ImVec2 vec2); /*
-        ImVec2 result = imnodes::GetNodeScreenSpacePos(node);
+        ImVec2 result = imnodes::GetNodeGridSpacePos(node);
         Jni::ImVec2Cpy(env, &result, vec2);
     */
 
