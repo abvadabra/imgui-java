@@ -7,12 +7,7 @@ import static org.lwjgl.opengl.GL32.glClearColor;
 import static org.lwjgl.system.MemoryStack.stackPush;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
-import imgui.ImFontAtlas;
-import imgui.ImFontConfig;
-import imgui.ImGui;
-import imgui.ImGuiIO;
-import imgui.ImGuiStyle;
-import imgui.ImNodes;
+import imgui.*;
 import imgui.flag.ImGuiCol;
 import imgui.flag.ImGuiConfigFlags;
 import imgui.gl3.ImGuiImplGl3;
@@ -41,6 +36,8 @@ public final class ImGuiGlfwExample {
 
     // User UI to render
     private final ExampleUi exampleUi = new ExampleUi();
+
+    private long nodeEditor;
 
     public void run() throws Exception {
         setupGlfw();
@@ -140,6 +137,7 @@ public final class ImGuiGlfwExample {
         // This line is critical for Dear ImGui to work.
         ImGui.createContext();
         ImNodes.initialize();
+        nodeEditor = ImNodeEditor.createEditor();
         // ------------------------------------------------------------
         // Initialize ImGuiIO config
         final ImGuiIO io = ImGui.getIO();
@@ -202,6 +200,8 @@ public final class ImGuiGlfwExample {
             // Any Dear ImGui code SHOULD go between ImGui.newFrame()/ImGui.render() methods
             imGuiGlfw.newFrame();
             ImGui.newFrame();
+
+            ImNodeEditor.setCurrentEditor(nodeEditor);
 
             exampleUi.render();
             ImGui.render();

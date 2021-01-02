@@ -1,4 +1,5 @@
 import imgui.ImGuiViewport;
+import imgui.ImNodeEditor;
 import imgui.ImNodes;
 import imgui.flag.ImGuiColorEditFlags;
 import imgui.flag.ImGuiCond;
@@ -60,42 +61,50 @@ final class ExampleUi {
 
         ImGui.begin("Custom window");  // Start Custom window
 
-        ImNodes.beginNodeEditor();
+
+        ImNodeEditor.begin("My Editor");
+
+        int uniqueId = 1;
+
+        // Start drawing nodes.
+        ImNodeEditor.beginNode(1);
+        ImGui.text("Node A");
+        ImNodeEditor.beginPin(1, ImNodeEditor.PinKind.Input);
+        ImGui.text("-> In");
+        ImNodeEditor.endPin();
+        ImGui.sameLine();
+        ImNodeEditor.beginPin(2, ImNodeEditor.PinKind.Output);
+        ImGui.text("Out ->");
+        ImNodeEditor.endPin();
+        ImNodeEditor.endNode();
 
 
+        ImNodeEditor.beginNode(8);
+        ImGui.text("Node B");
+        ImNodeEditor.beginPin(3, ImNodeEditor.PinKind.Input);
+        ImGui.text("-> In");
+        ImNodeEditor.endPin();
+        ImGui.sameLine();
+        ImNodeEditor.beginPin(4, ImNodeEditor.PinKind.Output);
+        ImGui.text("Out ->");
+        ImNodeEditor.endPin();
+        ImNodeEditor.endNode();
 
-        ImNodes.beginNode(1);
-        ImNodes.beginNodeTitleBar();
-        ImGui.button("Hello");
-        ImNodes.endNodeTitleBar();
-        ImGui.text("Hello Node!");
 
-        ImNodes.beginOutputAttribute(4);
-        ImGui.text("Talk!");
-        ImNodes.endOutputAttribute();
-        ImNodes.endNode();
-
-        ImNodes.beginNode(2);
-        ImGui.text("Hello End node!");
-        ImNodes.beginInputAttribute(5);
-        ImNodes.endInputAttribute();
-        ImNodes.endNode();
-
-        ImNodes.endNodeEditor();
-
-        if (ImGui.isMouseDoubleClicked(0)) {
-            final int node = ImNodes.getHoveredNode();
-            if (node != -1) {
-                System.out.println("Double clicked " + node);
+        if(ImNodeEditor.beginCreate()){
+            ImInt a = new ImInt();
+            ImInt b = new ImInt();
+            if(ImNodeEditor.queryNewLink(a, b)){
+                System.out.println("tried to connect " + a + " and " + b);
+                ImNodeEditor.acceptNewItem(0F, 1F, 0F, 1F, 1F);
             }
         }
 
-        final ImInt source = new ImInt();
-        final ImInt target = new ImInt();
-        if (ImNodes.isLinkCreated(source, target)) {
-            System.out.println("Created link between " + source.get() + " and " + target.get());
-        }
+        ImNodeEditor.link(1, 2, 3);
 
+        ImNodeEditor.endCreate();
+
+        ImNodeEditor.end();
         showWindowImage();
         showToggles();
 
