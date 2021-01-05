@@ -43,6 +43,8 @@ class GenerateLibs extends DefaultTask {
 
             spec.from(project.rootProject.file('imnodes')) { CopySpec it -> it.include('*.h', '*.cpp') }
 
+            spec.from(project.rootProject.file('imgui-node-editor')) { CopySpec it -> it.include('*.h', '*.cpp', '*.inl') }
+
             if (withFreeType) {
                 spec.from(project.rootProject.file('imgui/misc/freetype')) { CopySpec it -> it.include('*.h', '*.cpp') }
             }
