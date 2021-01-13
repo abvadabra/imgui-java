@@ -40,7 +40,7 @@ public class ImGui {
     private static ImGuiPlatformIO platformIO;
 
     static {
-        if(!SKIP_LIB_LOADING) {
+        if (!SKIP_LIB_LOADING) {
             final String libPath = System.getProperty(LIB_PATH_PROP);
             final String libName = System.getProperty(LIB_NAME_PROP, LIB_NAME_DEFAULT);
             final String fullLibName = resolveFullLibName();
