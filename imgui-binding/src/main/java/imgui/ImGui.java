@@ -19,6 +19,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 
 public class ImGui {
+    private static final boolean SKIP_LIB_LOADING = Boolean.getBoolean("imgui.library.skip");
     private static final String LIB_PATH_PROP = "imgui.library.path";
     private static final String LIB_NAME_PROP = "imgui.library.name";
     private static final String LIB_NAME_DEFAULT = System.getProperty("os.arch").contains("64") ? "imgui-java64" : "imgui-java";
@@ -39,18 +40,20 @@ public class ImGui {
     private static ImGuiPlatformIO platformIO;
 
     static {
-        final String libPath = System.getProperty(LIB_PATH_PROP);
-        final String libName = System.getProperty(LIB_NAME_PROP, LIB_NAME_DEFAULT);
-        final String fullLibName = resolveFullLibName();
+        if(!SKIP_LIB_LOADING) {
+            final String libPath = System.getProperty(LIB_PATH_PROP);
+            final String libName = System.getProperty(LIB_NAME_PROP, LIB_NAME_DEFAULT);
+            final String fullLibName = resolveFullLibName();
 
-        final String extractedLibAbsPath = tryLoadFromClasspath(fullLibName);
+            final String extractedLibAbsPath = tryLoadFromClasspath(fullLibName);
 
-        if (extractedLibAbsPath != null) {
-            System.load(extractedLibAbsPath);
-        } else if (libPath != null) {
-            System.load(Paths.get(libPath).resolve(fullLibName).toFile().getAbsolutePath());
-        } else {
-            System.loadLibrary(libName);
+            if (extractedLibAbsPath != null) {
+                System.load(extractedLibAbsPath);
+            } else if (libPath != null) {
+                System.load(Paths.get(libPath).resolve(fullLibName).toFile().getAbsolutePath());
+            } else {
+                System.loadLibrary(libName);
+            }
         }
 
         IMGUI_IO = new ImGuiIO();
