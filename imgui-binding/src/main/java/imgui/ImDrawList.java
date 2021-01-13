@@ -253,9 +253,10 @@ public final class ImDrawList extends ImGuiStruct {
     */
 
     public native void addPolyline(ImVec2[] points, int numPoints, int col, boolean closed, float thickness); /*
+        const int bufferSize = 200;
         int points_num = env->GetArrayLength(points);
-        ImVec2 _points[points_num];
-        for (int i = 0; i < points_num; i++) {
+        ImVec2 _points[bufferSize];
+        for (int i = 0; i < points_num && i < bufferSize; i++) {
             jobject jImVec2 = env->GetObjectArrayElement(points, i);
             ImVec2 dst;
             Jni::ImVec2Cpy(env, jImVec2, &dst);

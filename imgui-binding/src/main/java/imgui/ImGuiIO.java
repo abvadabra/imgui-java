@@ -787,8 +787,8 @@ public final class ImGuiIO {
      * and _REGARDLESS_ of whether another viewport is focused. Set io.BackendFlags |= ImGuiBackendFlags_HasMouseHoveredViewport if you can provide this info.
      * If you don't imgui will infer the value using the rectangles and last focused time of the viewports it knows about (ignoring other OS windows).
      */
-    public native float getMouseHoveredViewport(); /*
-        return ImGui::GetIO().MouseHoveredViewport;
+    public native long getMouseHoveredViewport(); /*
+        return (jlong)(unsigned int)ImGui::GetIO().MouseHoveredViewport;
     */
 
     /**

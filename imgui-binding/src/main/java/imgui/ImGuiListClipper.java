@@ -47,7 +47,7 @@ public final class ImGuiListClipper {
      * @param callback action to do in iterations
      */
     public static void forEach(final int itemsCount, final ImListClipperCallback callback) {
-        forEach(itemsCount, -1, callback);
+        forEach(itemsCount, -1.0F, callback);
     }
 
     /**
@@ -57,9 +57,9 @@ public final class ImGuiListClipper {
      *                    Otherwise pass in the distance between your items, typically GetTextLineHeightWithSpacing() or GetFrameHeightWithSpacing().
      * @param callback action to do in iterations
      */
-    public static native void forEach(int itemsCount, int itemsHeight, ImListClipperCallback callback); /*
+    public static native void forEach(int itemsCount, float itemsHeight, ImListClipperCallback callback); /*
         ImGuiListClipper clipper;
-        clipper.Begin(itemsCount, itemsHeight);
+        clipper.Begin(itemsCount, (float)itemsHeight);
         while (clipper.Step()) {
             for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; i++) {
                 Jni::CallImListClipperCallback(env, callback, i);

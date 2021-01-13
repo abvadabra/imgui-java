@@ -1037,7 +1037,7 @@ public class ImGui {
     /**
      * Get current font size (= height in pixels) of current font with current scale applied
      */
-    public static native int getFontSize(); /*
+    public static native float getFontSize(); /*
         return ImGui::GetFontSize();
     */
 
@@ -1723,13 +1723,14 @@ public class ImGui {
     }
 
     private static native boolean nCombo(String label, int[] currentItem, String[] items, int itemsCount, int popupMaxHeightInItems); /*
-        const char* listbox_items[itemsCount];
-        for(int i = 0; i < itemsCount; i++) {
+        const int bufferSize = 200;
+        const char* listbox_items[bufferSize];
+        for(int i = 0; i < itemsCount && i < bufferSize; i++) {
             jstring string = (jstring)env->GetObjectArrayElement(items, i);
             const char* rawString = env->GetStringUTFChars(string, 0);
             listbox_items[i] = rawString;
         }
-        return ImGui::Combo(label, &currentItem[0], listbox_items, itemsCount, popupMaxHeightInItems);
+        return ImGui::Combo(label, &currentItem[0], listbox_items, itemsCount > bufferSize ? bufferSize : itemsCount, popupMaxHeightInItems);
     */
 
     /**
@@ -3681,15 +3682,16 @@ public class ImGui {
     }
 
     private static native boolean nListBox(String label, int[] currentItem, String[] items, int itemsCount, int heightInItems); /*
-        const char* listbox_items[itemsCount];
+        const int bufferSize = 200;
+        const char* listbox_items[bufferSize];
 
-        for(int i = 0; i < itemsCount; i++) {
+        for(int i = 0; i < itemsCount && i < bufferSize; i++) {
             jstring string = (jstring)env->GetObjectArrayElement(items, i);
             const char *rawString = env->GetStringUTFChars(string, 0);
             listbox_items[i] = rawString;
         }
 
-        return ImGui::ListBox(label, &currentItem[0], listbox_items, itemsCount, heightInItems);
+        return ImGui::ListBox(label, &currentItem[0], listbox_items, itemsCount > bufferSize ? bufferSize : itemsCount, heightInItems);
     */
 
     /**
