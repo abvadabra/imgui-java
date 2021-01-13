@@ -61,10 +61,14 @@ public final class ImNodeEditor {
     /*JNI
         #include <imgui.h>
         #include <imgui_node_editor.h>
+        #include <imgui_node_editor_internal.h>
         #include "jni_common.h"
         #include "jni_binding_struct.h"
         #include "widgets.h"
         namespace ed = ax::NodeEditor;
+
+        // internal namespace with actual structs definitions
+        namespace edd = ax::NodeEditor::Detail;
      */
 
     // CORE
@@ -110,6 +114,27 @@ public final class ImNodeEditor {
     */
 
     // CORE END
+
+    // INTERNAL
+
+    public static native float toCanvasX(float x); /*
+        return ((edd::EditorContext*)ed::GetCurrentEditor())->ToCanvas(ImVec2(x, 0.0f)).x;
+    */
+
+    public static native float toCanvasY(float y); /*
+        return ((edd::EditorContext*)ed::GetCurrentEditor())->ToCanvas(ImVec2(0.0f, y)).y;
+    */
+
+    public static native float toScreenX(float x); /*
+        return ((edd::EditorContext*)ed::GetCurrentEditor())->ToScreen(ImVec2(x, 0.0f)).x;
+    */
+
+    public static native float toScreenY(float y); /*
+        return ((edd::EditorContext*)ed::GetCurrentEditor())->ToScreen(ImVec2(0.0f, y)).y;
+    */
+
+
+    // INTERNAL END
 
     // STYLING
 
