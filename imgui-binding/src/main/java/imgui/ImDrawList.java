@@ -164,7 +164,7 @@ public final class ImDrawList extends ImGuiStruct {
      */
 
     public native void addRectFilledMultiColor(float pMinX, float pMinY, float pMaxX, float pMaxY, long colUprLeft, long colUprRight, long colBotRight, long colBotLeft); /*
-        IM_DRAW_LIST->AddRectFilledMultiColor(ImVec2(pMinX, pMinY), ImVec2(pMaxX, pMaxY), colUprLeft, colUprRight, colBotRight, colBotLeft);
+        IM_DRAW_LIST->AddRectFilledMultiColor(ImVec2(pMinX, pMinY), ImVec2(pMaxX, pMaxY), (ImU32)colUprLeft, (ImU32)colUprRight, (ImU32)colBotRight, (ImU32)colBotLeft);
      */
 
     public native void addQuad(float p1X, float p1Y, float p2X, float p2Y, float p3X, float p3Y, float p4X, float p4Y, int col); /*
@@ -267,9 +267,10 @@ public final class ImDrawList extends ImGuiStruct {
 
     // Note: Anti-aliased filling requires points to be in clockwise order.
     public native void addConvexPolyFilled(ImVec2[] points, int numPoints, int col); /*
+        const int bufferSize = 200;
         int points_num = env->GetArrayLength(points);
         ImVec2 _points[points_num];
-        for (int i = 0; i < points_num; i++) {
+        for (int i = 0; i < points_num && i < bufferSize; i++) {
             jobject jImVec2 = env->GetObjectArrayElement(points, i);
             ImVec2 dst;
             Jni::ImVec2Cpy(env, jImVec2, &dst);

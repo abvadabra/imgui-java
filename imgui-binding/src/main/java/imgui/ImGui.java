@@ -1898,21 +1898,21 @@ public class ImGui {
         return ImGui::DragInt(label, &v[0], vSpeed);
     */
 
-    public static native boolean dragInt(String label, int[] v, float vSpeed, float vMin); /*
+    public static native boolean dragInt(String label, int[] v, float vSpeed, int vMin); /*
         return ImGui::DragInt(label, &v[0], vSpeed, vMin);
     */
 
     /**
      * If {@code vMin >= vMax} we have no bound
      */
-    public static native boolean dragInt(String label, int[] v, float vSpeed, float vMin, float vMax); /*
+    public static native boolean dragInt(String label, int[] v, float vSpeed, int vMin, int vMax); /*
         return ImGui::DragInt(label, &v[0], vSpeed, vMin, vMax);
     */
 
     /**
      * If {@code vMin >= vMax} we have no bound
      */
-    public static native boolean dragInt(String label, int[] v, float vSpeed, float vMin, float vMax, String format); /*
+    public static native boolean dragInt(String label, int[] v, float vSpeed, int vMin, int vMax, String format); /*
         return ImGui::DragInt(label, &v[0], vSpeed, vMin, vMax, format);
     */
 
@@ -1924,15 +1924,15 @@ public class ImGui {
         return ImGui::DragInt2(label, v, vSpeed);
     */
 
-    public static native boolean dragInt2(String label, int[] v, float vSpeed, float vMin); /*
+    public static native boolean dragInt2(String label, int[] v, float vSpeed, int vMin); /*
         return ImGui::DragInt2(label, v, vSpeed, vMin);
     */
 
-    public static native boolean dragInt2(String label, int[] v, float vSpeed, float vMin, float vMax); /*
+    public static native boolean dragInt2(String label, int[] v, float vSpeed, int vMin, int vMax); /*
         return ImGui::DragInt2(label, v, vSpeed, vMin, vMax);
     */
 
-    public static native boolean dragInt2(String label, int[] v, float vSpeed, float vMin, float vMax, String format); /*
+    public static native boolean dragInt2(String label, int[] v, float vSpeed, int vMin, int vMax, String format); /*
         return ImGui::DragInt2(label, v, vSpeed, vMin, vMax, format);
     */
 
@@ -1944,15 +1944,15 @@ public class ImGui {
         return ImGui::DragInt2(label, v, vSpeed);
     */
 
-    public static native boolean dragInt3(String label, int[] v, float vSpeed, float vMin); /*
+    public static native boolean dragInt3(String label, int[] v, float vSpeed, int vMin); /*
         return ImGui::DragInt2(label, v, vSpeed, vMin);
     */
 
-    public static native boolean dragInt3(String label, int[] v, float vSpeed, float vMin, float vMax); /*
+    public static native boolean dragInt3(String label, int[] v, float vSpeed, int vMin, int vMax); /*
         return ImGui::DragInt2(label, v, vSpeed, vMin, vMax);
     */
 
-    public static native boolean dragInt3(String label, int[] v, float vSpeed, float vMin, float vMax, String format); /*
+    public static native boolean dragInt3(String label, int[] v, float vSpeed, int vMin, int vMax, String format); /*
         return ImGui::DragInt2(label, v, vSpeed, vMin, vMax, format);
     */
 
@@ -1964,15 +1964,15 @@ public class ImGui {
         return ImGui::DragInt4(label, v, vSpeed);
     */
 
-    public static native boolean dragInt4(String label, int[] v, float vSpeed, float vMin); /*
+    public static native boolean dragInt4(String label, int[] v, float vSpeed, int vMin); /*
         return ImGui::DragInt4(label, v, vSpeed, vMin);
     */
 
-    public static native boolean dragInt4(String label, int[] v, float vSpeed, float vMin, float vMax); /*
+    public static native boolean dragInt4(String label, int[] v, float vSpeed, int vMin, int vMax); /*
         return ImGui::DragInt4(label, v, vSpeed, vMin, vMax);
     */
 
-    public static native boolean dragInt4(String label, int[] v, float vSpeed, float vMin, float vMax, String format); /*
+    public static native boolean dragInt4(String label, int[] v, float vSpeed, int vMin, int vMax, String format); /*
         return ImGui::DragInt4(label, v, vSpeed, vMin, vMax, format);
     */
 
@@ -1984,19 +1984,19 @@ public class ImGui {
         return ImGui::DragIntRange2(label, &vCurrentMin[0], &vCurrentMax[0], vSpeed);
     */
 
-    public static native boolean dragIntRange2(String label, int[] vCurrentMin, int[] vCurrentMax, float vSpeed, float vMin); /*
+    public static native boolean dragIntRange2(String label, int[] vCurrentMin, int[] vCurrentMax, float vSpeed, int vMin); /*
         return ImGui::DragIntRange2(label, &vCurrentMin[0], &vCurrentMax[0], vSpeed, vMin);
     */
 
-    public static native boolean dragIntRange2(String label, int[] vCurrentMin, int[] vCurrentMax, float vSpeed, float vMin, float vMax); /*
+    public static native boolean dragIntRange2(String label, int[] vCurrentMin, int[] vCurrentMax, float vSpeed, int vMin, int vMax); /*
         return ImGui::DragIntRange2(label, &vCurrentMin[0], &vCurrentMax[0], vSpeed, vMin, vMax);
     */
 
-    public static native boolean dragIntRange2(String label, int[] vCurrentMin, int[] vCurrentMax, float vSpeed, float vMin, float vMax, String format); /*
+    public static native boolean dragIntRange2(String label, int[] vCurrentMin, int[] vCurrentMax, float vSpeed, int vMin, int vMax, String format); /*
         return ImGui::DragIntRange2(label, &vCurrentMin[0], &vCurrentMax[0], vSpeed, vMin, vMax, format);
     */
 
-    public static native boolean dragIntRange2(String label, int[] vCurrentMin, int[] vCurrentMax, float vSpeed, float vMin, float vMax, String format, String formatMax); /*
+    public static native boolean dragIntRange2(String label, int[] vCurrentMin, int[] vCurrentMax, float vSpeed, int vMin, int vMax, String format, String formatMax); /*
         return ImGui::DragIntRange2(label, &vCurrentMin[0], &vCurrentMax[0], vSpeed, vMin, vMax, format, formatMax);
     */
 
