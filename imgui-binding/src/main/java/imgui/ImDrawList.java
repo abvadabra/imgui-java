@@ -269,7 +269,7 @@ public final class ImDrawList extends ImGuiStruct {
     public native void addConvexPolyFilled(ImVec2[] points, int numPoints, int col); /*
         const int bufferSize = 200;
         int points_num = env->GetArrayLength(points);
-        ImVec2 _points[points_num];
+        ImVec2 _points[bufferSize];
         for (int i = 0; i < points_num && i < bufferSize; i++) {
             jobject jImVec2 = env->GetObjectArrayElement(points, i);
             ImVec2 dst;
