@@ -9,6 +9,7 @@ import imgui.type.ImLong;
 import imgui.type.ImShort;
 import imgui.type.ImString;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
@@ -17,6 +18,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 
 public class ImGui {
     private static final boolean SKIP_LIB_LOADING = Boolean.getBoolean("imgui.library.skip");
@@ -47,12 +50,16 @@ public class ImGui {
 
             final String extractedLibAbsPath = tryLoadFromClasspath(fullLibName);
 
-            if (extractedLibAbsPath != null) {
-                System.load(extractedLibAbsPath);
-            } else if (libPath != null) {
-                System.load(Paths.get(libPath).resolve(fullLibName).toFile().getAbsolutePath());
-            } else {
-                System.loadLibrary(libName);
+            try {
+                if (extractedLibAbsPath != null) {
+                    doLoadLibrary(extractedLibAbsPath);
+                } else if (libPath != null) {
+                    doLoadLibrary(Paths.get(libPath).resolve(fullLibName).toFile().getAbsolutePath());
+                } else {
+                    doLoadLibrary(libName);
+                }
+            } catch (UnsatisfiedLinkError error){
+                error.printStackTrace();
             }
         }
 
@@ -68,6 +75,15 @@ public class ImGui {
         ImFontAtlas.nInit();
         ImGuiPlatformIO.init();
         nInitInputTextData();
+    }
+
+    private static void doLoadLibrary(String library){
+        AccessController.doPrivileged(new PrivilegedAction<Object>() {
+            public Object run() {
+                System.loadLibrary(library);
+                return null;
+            }
+        });
     }
 
     private static String resolveFullLibName() {
