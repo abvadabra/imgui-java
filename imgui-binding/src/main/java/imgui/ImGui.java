@@ -2811,10 +2811,10 @@ public class ImGui {
             InputTextCallbackUserData* userData = (InputTextCallbackUserData*)data->UserData;
 
             if (data->EventFlag == ImGuiInputTextFlags_CallbackCharFilter) {
-                int allowedCharLength = strlen(userData->allowedChars);
+                size_t allowedCharLength = strlen(userData->allowedChars);
                 if(allowedCharLength > 0) {
                     bool found = false;
-                    for(int i = 0; i < allowedCharLength; i++) {
+                    for(size_t i = 0; i < allowedCharLength; i++) {
                         if(userData->allowedChars[i] == data->EventChar) {
                             found = true;
                             break;
@@ -2911,10 +2911,10 @@ public class ImGui {
             int size;
 
             if (userData.jResizedBuf != NULL) {
-                size = strlen(userData.resizedBuf);
+                size = (int)strlen(userData.resizedBuf);
                 env->ReleasePrimitiveArrayCritical(userData.jResizedBuf, userData.resizedBuf, 0);
             } else {
-                size = strlen(buf);
+                size = (int)strlen(buf);
             }
 
             env->SetIntField(textInputData, inputDataSizeID, size);
