@@ -33,6 +33,8 @@ public final class ImNodeEditor {
     private ImNodeEditor() { }
 
     /*JNI
+        #pragma warning (disable:4244)
+
         #include <imgui.h>
         #include <imgui_node_editor.h>
         #include <imgui_node_editor_internal.h>
