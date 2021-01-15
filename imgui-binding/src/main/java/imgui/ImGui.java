@@ -9,7 +9,6 @@ import imgui.type.ImLong;
 import imgui.type.ImShort;
 import imgui.type.ImString;
 
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
@@ -58,7 +57,7 @@ public class ImGui {
                 } else {
                     doLoadLibrary(libName);
                 }
-            } catch (UnsatisfiedLinkError error){
+            } catch (UnsatisfiedLinkError error) {
                 error.printStackTrace();
             }
         }
@@ -77,7 +76,7 @@ public class ImGui {
         nInitInputTextData();
     }
 
-    private static void doLoadLibrary(String library){
+    private static void doLoadLibrary(String library) {
         AccessController.doPrivileged(new PrivilegedAction<Object>() {
             public Object run() {
                 System.loadLibrary(library);

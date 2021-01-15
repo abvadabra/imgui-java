@@ -1,6 +1,5 @@
 import imgui.ImGuiViewport;
-import imgui.ImNodeEditor;
-import imgui.ImNodes;
+import imgui.nodeditor.ImNodeEditor;
 import imgui.flag.ImGuiColorEditFlags;
 import imgui.flag.ImGuiCond;
 import imgui.flag.ImGuiDir;
@@ -9,9 +8,11 @@ import imgui.flag.ImGuiStyleVar;
 import imgui.flag.ImGuiWindowFlags;
 import imgui.internal.ImGui;
 import imgui.internal.flag.ImGuiDockNodeFlags;
+import imgui.nodeditor.ImNodeEditorPinKind;
 import imgui.type.ImBoolean;
 import imgui.ImColor;
 import imgui.type.ImInt;
+import imgui.type.ImLong;
 import imgui.type.ImString;
 import org.lwjgl.BufferUtils;
 
@@ -69,11 +70,11 @@ final class ExampleUi {
         // Start drawing nodes.
         ImNodeEditor.beginNode(1);
         ImGui.text("Node A");
-        ImNodeEditor.beginPin(1, ImNodeEditor.PinKind.Input);
+        ImNodeEditor.beginPin(1, ImNodeEditorPinKind.Input);
         ImGui.text("-> In");
         ImNodeEditor.endPin();
         ImGui.sameLine();
-        ImNodeEditor.beginPin(2, ImNodeEditor.PinKind.Output);
+        ImNodeEditor.beginPin(2, ImNodeEditorPinKind.Output);
         ImGui.text("Out ->");
         ImNodeEditor.endPin();
         ImNodeEditor.endNode();
@@ -81,19 +82,19 @@ final class ExampleUi {
 
         ImNodeEditor.beginNode(8);
         ImGui.text("Node B");
-        ImNodeEditor.beginPin(3, ImNodeEditor.PinKind.Input);
+        ImNodeEditor.beginPin(3, ImNodeEditorPinKind.Input);
         ImGui.text("-> In");
         ImNodeEditor.endPin();
         ImGui.sameLine();
-        ImNodeEditor.beginPin(4, ImNodeEditor.PinKind.Output);
+        ImNodeEditor.beginPin(4, ImNodeEditorPinKind.Output);
         ImGui.text("Out ->");
         ImNodeEditor.endPin();
         ImNodeEditor.endNode();
 
 
         if(ImNodeEditor.beginCreate()){
-            ImInt a = new ImInt();
-            ImInt b = new ImInt();
+            ImLong a = new ImLong();
+            ImLong b = new ImLong();
             if(ImNodeEditor.queryNewLink(a, b)){
                 System.out.println("tried to connect " + a + " and " + b);
                 ImNodeEditor.acceptNewItem(0F, 1F, 0F, 1F, 1F);

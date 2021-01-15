@@ -18,6 +18,10 @@ import java.io.InputStream;
 import java.io.UncheckedIOException;
 import java.nio.IntBuffer;
 import java.util.Objects;
+
+import imgui.imnodes.ImNodes;
+import imgui.nodeditor.ImNodeEditor;
+import imgui.nodeditor.ImNodeEditorContext;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
@@ -37,7 +41,7 @@ public final class ImGuiGlfwExample {
     // User UI to render
     private final ExampleUi exampleUi = new ExampleUi();
 
-    private long nodeEditor;
+    private ImNodeEditorContext nodeEditor;
 
     public void run() throws Exception {
         setupGlfw();

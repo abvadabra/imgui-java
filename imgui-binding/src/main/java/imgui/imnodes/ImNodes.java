@@ -1,7 +1,14 @@
-package imgui;
+package imgui.imnodes;
 
+import imgui.ImVec2;
 import imgui.type.ImInt;
 
+/**
+ * Bindings for Imnodes (https://github.com/Nelarius/imnodes/)
+ * Original library author - Johann Muszynski (https://github.com/Nelarius)
+ *
+ * Refer to the library's Github page for examples and support
+ */
 public final class ImNodes {
 
     public enum ColorStyle {
