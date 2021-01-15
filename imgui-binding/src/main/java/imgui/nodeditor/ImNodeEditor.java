@@ -127,7 +127,7 @@ public final class ImNodeEditor {
 
     // STYLING
 
-    private static native void pushStyleColor(int imNodeEditorStyleColor, float r, float g, float b, float a); /*
+    public static native void pushStyleColor(int imNodeEditorStyleColor, float r, float g, float b, float a); /*
         ed::PushStyleColor((ed::StyleColor)imNodeEditorStyleColor, ImVec4(r, g, b, a));
     */
 
