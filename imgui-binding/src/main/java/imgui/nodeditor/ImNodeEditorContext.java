@@ -36,7 +36,7 @@ public final class ImNodeEditorContext extends ImGuiStructDestroyable {
         return (jlong)ed::CreateEditor();
     */
 
-    private native long nDestroyEditorContext(); /*
+    private native void nDestroyEditorContext(); /*
        ed::DestroyEditor(IM_NODE_EDITOR_CONTEXT);
     */
 }
