@@ -15,7 +15,7 @@ public final class ImNodeEditorContext extends ImGuiStructDestroyable {
      */
 
     public ImNodeEditorContext() {
-        this(0);
+        super();
     }
 
     public ImNodeEditorContext(final long ptr) {
