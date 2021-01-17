@@ -24,10 +24,12 @@ public final class ImNodeEditor {
 
     private static final ImDrawList HINT_FOREGROUND_DRAW_LIST;
     private static final ImDrawList HINT_BACKGROUND_DRAW_LIST;
+    private static final ImDrawList NODE_BACKGROUND_DRAW_LIST;
 
     static {
         HINT_FOREGROUND_DRAW_LIST = new ImDrawList(0);
         HINT_BACKGROUND_DRAW_LIST = new ImDrawList(0);
+        NODE_BACKGROUND_DRAW_LIST = new ImDrawList(0);
     }
 
     private ImNodeEditor() { }
@@ -42,9 +44,6 @@ public final class ImNodeEditor {
         #include "jni_binding_struct.h"
         #include "widgets.h"
         namespace ed = ax::NodeEditor;
-
-        // internal namespace with actual structs definitions
-        namespace edd = ax::NodeEditor::Detail;
      */
 
 
@@ -78,6 +77,10 @@ public final class ImNodeEditor {
         ed::BeginNode(id);
     */
 
+    public static native void group(float w, float h); /*
+        ed::Group(ImVec2(w, h));
+    */
+
     public static native boolean beginGroupHint(long id); /*
         return ed::BeginGroupHint(id);
     */
@@ -103,24 +106,33 @@ public final class ImNodeEditor {
         ed::End();
     */
 
+    public static native float getScreenSizeX(); /*
+        return ed::GetScreenSize().x;
+    */
+
+    public static native float getScreenSizeY(); /*
+        return ed::GetScreenSize().y;
+    */
 
     public static native float toCanvasX(float screenSpacePosX); /*
-        return ((edd::EditorContext*)ed::GetCurrentEditor())->ToCanvas(ImVec2(screenSpacePosX, 0.0f)).x;
+        return ed::ScreenToCanvas(ImVec2(screenSpacePosX, 0.0f)).x;
     */
 
     public static native float toCanvasY(float screenSpacePosY); /*
-        return ((edd::EditorContext*)ed::GetCurrentEditor())->ToCanvas(ImVec2(0.0f, screenSpacePosY)).y;
+        return ed::ScreenToCanvas(ImVec2(0.0f, screenSpacePosY)).y;
     */
 
     public static native float toScreenX(float canvasSpacePosX); /*
-        return ((edd::EditorContext*)ed::GetCurrentEditor())->ToScreen(ImVec2(canvasSpacePosX, 0.0f)).x;
+        return ed::CanvasToScreen(ImVec2(canvasSpacePosX, 0.0f)).x;
     */
 
     public static native float toScreenY(float canvasSpacePosY); /*
-        return ((edd::EditorContext*)ed::GetCurrentEditor())->ToScreen(ImVec2(0.0f, canvasSpacePosY)).y;
+        return ed::CanvasToScreen(ImVec2(0.0f, canvasSpacePosY)).y;
     */
 
-
+    public static native String getStyleColorName(int imNodeEditorStyleColor); /*
+        return env->NewStringUTF(ed::GetStyleColorName((ed::StyleColor)imNodeEditorStyleColor);
+    */
 
     public static native void pushStyleColor(int imNodeEditorStyleColor, float r, float g, float b, float a); /*
         ed::PushStyleColor((ed::StyleColor)imNodeEditorStyleColor, ImVec4(r, g, b, a));
@@ -164,8 +176,8 @@ public final class ImNodeEditor {
     */
 
     /**
-     *  Binding notice: both getHintForegroundDrawList() and getHintBackgroundDrawList() return singleton
-     *  objects which shouldn't be used outside of the scope of current hint (after you call endGroupHint())
+     *  Binding notice: both getHintForegroundDrawList(), getHintBackgroundDrawList() and getNodeBackgroundDrawList(long)
+     *  return singleton objects which shouldn't be used outside of the scope of current hint/node
      */
 
     public static ImDrawList getHintForegroundDrawList() {
@@ -178,12 +190,26 @@ public final class ImNodeEditor {
         return HINT_BACKGROUND_DRAW_LIST;
     }
 
+    public static ImDrawList getNodeBackgroundDrawList(final long nodeId) {
+        final long ptr = nGetNodeBackgroundDrawList(nodeId);
+        if (ptr == 0L) {
+            return null;
+        } else {
+            NODE_BACKGROUND_DRAW_LIST.ptr = ptr;
+            return NODE_BACKGROUND_DRAW_LIST;
+        }
+    }
+
     private static native long nGetHintForegroundDrawList(); /*
         return (jlong)(intptr_t)ed::GetHintForegroundDrawList();
     */
 
     private static native long nGetHintBackgroundDrawList(); /*
         return (jlong)(intptr_t)ed::GetHintBackgroundDrawList();
+    */
+
+    private static native long nGetNodeBackgroundDrawList(long nodeId); /*
+        return (jlong)(intptr_t)ed::GetNodeBackgroundDrawList(nodeId);
     */
 
     public static native long getDoubleClickedNode(); /*
@@ -196,6 +222,18 @@ public final class ImNodeEditor {
 
     public static native long getDoubleClickedLink(); /*
         return (jlong)(uintptr_t)ed::GetDoubleClickedLink();
+    */
+
+    public static native boolean isBackgroundClicked(); /*
+        return ed::IsBackgroundClicked();
+    */
+
+    public static native boolean isBackgroundDoubleClicked(); /*
+        return ed::IsBackgroundDoubleClicked();
+    */
+
+    public static native boolean pinHadAnyLinks(long pinId); /*
+        return ed::PinHadAnyLinks(pinId);
     */
 
     public static native float getCurrentZoom(); /*
@@ -273,6 +311,10 @@ public final class ImNodeEditor {
         return ed::ShowBackgroundContextMenu();
     */
 
+    public static native void restoreNodeState(long node); /*
+        ed::RestoreNodeState(node);
+    */
+
     public static native void suspend(); /*
         ed::Suspend();
     */
@@ -283,6 +325,10 @@ public final class ImNodeEditor {
 
     public static native boolean isSuspended(); /*
         return ed::IsSuspended();
+    */
+
+    public static native boolean isActive(); /*
+        return ed::IsActive();
     */
 
     public static native void setNodePosition(long node, float x, float y); /*
@@ -296,6 +342,10 @@ public final class ImNodeEditor {
     public static native void link(long id, long startPinId, long endPinId, float r, float g, float b, float a,
                                    float thickness); /*
         ed::Link(id, startPinId, endPinId, ImVec4(r, g, b, a), thickness);
+    */
+
+    public static native void flow(long linkId); /*
+        ed::Flow(linkId);
     */
 
     public static boolean beginCreate() {
@@ -358,6 +408,14 @@ public final class ImNodeEditor {
         return ed::QueryDeletedNode((ed::NodeId*)&nodeId[0]);
     */
 
+    public static native boolean acceptDeletedItem(); /*
+        return ed::AcceptDeletedItem();
+    */
+
+    public static native void rejectDeletedItem(); /*
+        ed::RejectDeletedItem();
+    */
+
     public static native void endDelete(); /*
         ed::EndDelete();
     */
@@ -381,6 +439,14 @@ public final class ImNodeEditor {
 
     public static native float getNodePositionY(long node); /*
         return ed::GetNodePosition(node).y;
+    */
+
+    public static native float getNodeSizeX(long node); /*
+        return ed::GetNodeSize(node).x;
+    */
+
+    public static native float getNodeSizeY(long node); /*
+        return ed::GetNodeSize(node).y;
     */
 
     public static native void centerNodeOnScreen(long node); /*
@@ -429,6 +495,54 @@ public final class ImNodeEditor {
 
     public static native boolean deleteLink(long linkId); /*
         return ed::DeleteLink(linkId);
+    */
+
+    public static native void enableShortcuts(boolean enable); /*
+        ed::EnableShortcuts(enable);
+    */
+
+    public static native boolean areShortcutsEnabled(); /*
+        return ed::AreShortcutsEnabled();
+    */
+
+    public static native boolean beginShortcut(); /*
+        return ed::BeginShortcut();
+    */
+
+    public static native boolean acceptCut(); /*
+        return ed::AcceptCut();
+    */
+
+    public static native boolean acceptCopy(); /*
+        return ed::AcceptCopy();
+    */
+
+    public static native boolean acceptPaste(); /*
+        return ed::AcceptPaste();
+    */
+
+    public static native boolean acceptDuplicate(); /*
+        return ed::AcceptDuplicate();
+    */
+
+    public static native boolean acceptCreateNode(); /*
+        return ed::AcceptCreateNode();
+    */
+
+    public static native int getActionContextSize(); /*
+        return ed::GetActionContextSize();
+    */
+
+    public static native int getActionContextNodes(long[] nodes, int size); /*
+        return ed::GetActionContextNodes(&nodes[0], size);
+    */
+
+    public static native int getActionContextLinks(long[] links, int size); /*
+        return ed::GetActionContextLinks(&links[0], size);
+    */
+
+    public static native void endShortcut(); /*
+        ed::EndShortcut();
     */
 
     // TODO: MOVE OUT OF THIS CLASS
