@@ -47,7 +47,6 @@ public final class ImNodeEditor {
         namespace edd = ax::NodeEditor::Detail;
      */
 
-    // CORE
 
     /**
      * This method exists for api consistency and you can just call NodeEditorContext manually
@@ -104,9 +103,6 @@ public final class ImNodeEditor {
         ed::End();
     */
 
-    // CORE END
-
-    // INTERNAL
 
     public static native float toCanvasX(float screenSpacePosX); /*
         return ((edd::EditorContext*)ed::GetCurrentEditor())->ToCanvas(ImVec2(screenSpacePosX, 0.0f)).x;
@@ -125,9 +121,6 @@ public final class ImNodeEditor {
     */
 
 
-    // INTERNAL END
-
-    // STYLING
 
     public static native void pushStyleColor(int imNodeEditorStyleColor, float r, float g, float b, float a); /*
         ed::PushStyleColor((ed::StyleColor)imNodeEditorStyleColor, ImVec4(r, g, b, a));
@@ -153,9 +146,6 @@ public final class ImNodeEditor {
         ed::PopStyleVar(count);
     */
 
-    // STYLING END
-
-    // ADDITIONAL LOGIC
 
     public static native float getGroupMinX(); /*
         return ed::GetGroupMin().x;
@@ -441,9 +431,6 @@ public final class ImNodeEditor {
         return ed::DeleteLink(linkId);
     */
 
-    // ADDITIONAL LOGIC END
-
-    // UTILITIES
     // TODO: MOVE OUT OF THIS CLASS
 
     public enum IconType {
@@ -464,7 +451,5 @@ public final class ImNodeEditor {
                                      float ir, float ig, float ib, float ia); /*
         ax::Widgets::Icon(ImVec2(w, h), (ax::Drawing::IconType)type, isFilled, ImVec4(r, g, b, a), ImVec4(ir, ig, ib, ia));
     */
-
-    // UTILITIES END
 
 }
