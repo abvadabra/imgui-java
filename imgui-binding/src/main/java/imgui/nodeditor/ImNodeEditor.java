@@ -131,7 +131,7 @@ public final class ImNodeEditor {
     */
 
     public static native String getStyleColorName(int imNodeEditorStyleColor); /*
-        return env->NewStringUTF(ed::GetStyleColorName((ed::StyleColor)imNodeEditorStyleColor);
+        return env->NewStringUTF(ed::GetStyleColorName((ed::StyleColor)imNodeEditorStyleColor));
     */
 
     public static native void pushStyleColor(int imNodeEditorStyleColor, float r, float g, float b, float a); /*
@@ -534,11 +534,11 @@ public final class ImNodeEditor {
     */
 
     public static native int getActionContextNodes(long[] nodes, int size); /*
-        return ed::GetActionContextNodes(&nodes[0], size);
+        return ed::GetActionContextNodes((ed::NodeId*)&nodes[0], size);
     */
 
     public static native int getActionContextLinks(long[] links, int size); /*
-        return ed::GetActionContextLinks(&links[0], size);
+        return ed::GetActionContextLinks((ed::LinkId*)&links[0], size);
     */
 
     public static native void endShortcut(); /*

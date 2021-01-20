@@ -4,6 +4,7 @@ import imgui.type.ImInt;
 
 public final class ImGui extends imgui.ImGui {
     private static final ImGuiDockNode DOCK_NODE = new ImGuiDockNode(0);
+    private static final ImGuiWindow WINDOW = new ImGuiWindow(0);
 
     /*JNI
         #include <stdint.h>
@@ -11,7 +12,95 @@ public final class ImGui extends imgui.ImGui {
         #include <imgui_internal.h>
      */
 
+    public static ImGuiWindow getCurrentWindow() {
+        final long ptr = nGetCurrentWindow();
+        if (ptr == 0L) {
+            return null;
+        } else {
+           WINDOW.ptr = ptr;
+           return WINDOW;
+        }
+    }
+
+    public static native long nGetCurrentWindow(); /*
+        return (jlong)(uintptr_t) ImGui::GetCurrentWindow();
+    */
+
+    public static void focusWindow(final ImGuiWindow window) {
+        nFocusWindow(window.ptr);
+    }
+
+    public static native void nFocusWindow(long ptr); /*
+        ImGui::FocusWindow((ImGuiWindow*)ptr);
+    */
+
+    public static native void nBringWindowToFocusFront(long ptr); /*
+        ImGui::BringWindowToFocusFront((ImGuiWindow*)ptr);
+    */
+
+    public static native void nBringWindowToDisplayFront(long ptr); /*
+        ImGui::BringWindowToDisplayFront((ImGuiWindow*)ptr);
+    */
+
+    public static native int getItemID(); /*
+        return (jint)ImGui::GetItemID();
+    */
+
+    public static native int getActiveID(); /*
+        return (jint)ImGui::GetActiveID();
+    */
+
+    public static native int getFocusID(); /*
+        return (jint)ImGui::GetFocusID();
+    */
+
+    public static void setActiveID(final int id, final ImGuiWindow window) {
+        nSetActiveID(id, window.ptr);
+    }
+
+    public static native void nSetActiveID(int id, long windowPtr); /*
+        ImGui::SetActiveID((ImGuiID)id, (ImGuiWindow*)windowPtr);
+    */
+
+    public static void setFocusID(final int id, final ImGuiWindow window) {
+        nSetFocusID(id, window.ptr);
+    }
+
+    public static native void nSetFocusID(int id, long windowPtr); /*
+        ImGui::SetFocusID((ImGuiID)id, (ImGuiWindow*)windowPtr);
+    */
+
+    public static native void ClearActiveID(); /*
+        ImGui::ClearActiveID();
+    */
+
+    public static native int getHoveredID(); /*
+        return (jint)ImGui::GetHoveredID();
+    */
+
+    public static native void setHoveredID(int id); /*
+        ImGui::SetHoveredID((ImGuiID)id);
+    */
+
+
+
     // Basic Helpers for widget code
+
+    public static native void itemSize(float width, float height, float textBaselineY); /*
+        ImGui::ItemSize(ImVec2(width, height), textBaselineY);
+    */
+
+    public static native void itemSize(float x, float y, float width, float height, float textBaselineY); /*
+        ImGui::ItemSize(ImRect(x, y, width, height), textBaselineY);
+    */
+
+    public static native boolean itemAdd(float x, float y, float width, float height, int id); /*
+        return ImGui::ItemAdd(ImRect(x, y, width, height), (ImGuiID)id);
+    */
+
+    public static native boolean itemHoverable(float x, float y, float width, float height, int id); /*
+        return ImGui::ItemHoverable(ImRect(x, y, width, height), (ImGuiID)id);
+    */
 
     public static native void pushItemFlag(int imGuiItemFlags, boolean enabled); /*
         ImGui::PushItemFlag(imGuiItemFlags, enabled);
