@@ -70,7 +70,7 @@ public final class ImGui extends imgui.ImGui {
         ImGui::SetFocusID((ImGuiID)id, (ImGuiWindow*)windowPtr);
     */
 
-    public static native void ClearActiveID(); /*
+    public static native void clearActiveID(); /*
         ImGui::ClearActiveID();
     */
 
@@ -90,16 +90,16 @@ public final class ImGui extends imgui.ImGui {
         ImGui::ItemSize(ImVec2(width, height), textBaselineY);
     */
 
-    public static native void itemSize(float x, float y, float width, float height, float textBaselineY); /*
-        ImGui::ItemSize(ImRect(x, y, width, height), textBaselineY);
+    public static native void itemSize(float x, float y, float mx, float my, float textBaselineY); /*
+        ImGui::ItemSize(ImRect(x, y, mx, my), textBaselineY);
     */
 
-    public static native boolean itemAdd(float x, float y, float width, float height, int id); /*
-        return ImGui::ItemAdd(ImRect(x, y, width, height), (ImGuiID)id);
+    public static native boolean itemAdd(float x, float y, float mx, float my, int id); /*
+        return ImGui::ItemAdd(ImRect(x, y, mx, my), (ImGuiID)id);
     */
 
-    public static native boolean itemHoverable(float x, float y, float width, float height, int id); /*
-        return ImGui::ItemHoverable(ImRect(x, y, width, height), (ImGuiID)id);
+    public static native boolean itemHoverable(float x, float y, float mx, float my, int id); /*
+        return ImGui::ItemHoverable(ImRect(x, y, mx, my), (ImGuiID)id);
     */
 
     public static native void pushItemFlag(int imGuiItemFlags, boolean enabled); /*
