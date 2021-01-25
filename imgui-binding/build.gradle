@@ -53,3 +53,5 @@ bintray {
         name = 'imgui-java-binding'
     }
 }
+
+tasks.jar.dependsOn(sourcesJar)
