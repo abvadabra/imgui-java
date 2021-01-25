@@ -39,18 +39,23 @@ class GenerateLibs extends DefaultTask {
 
         // Copy ImGui/Imnodes h/cpp files
         project.copy { CopySpec spec ->
-            spec.from(project.rootProject.file('imgui')) { CopySpec it -> it.include('*.h', '*.cpp') }
+            ['include/imgui', 'include/imnodes', 'include/imgui-node-editor'].each {
+                spec.from(project.rootProject.file(it)) { CopySpec s -> s.include('*.h', '*.cpp', '*.inl') }
+            }
 
             spec.from(project.rootProject.file('imnodes')) { CopySpec it -> it.include('*.h', '*.cpp') }
 
             spec.from(project.rootProject.file('imgui-node-editor')) { CopySpec it -> it.include('*.h', '*.cpp', '*.inl') }
 
             if (withFreeType) {
-                spec.from(project.rootProject.file('imgui/misc/freetype')) { CopySpec it -> it.include('*.h', '*.cpp') }
+                spec.from(project.rootProject.file('include/imgui/misc/freetype')) { CopySpec it -> it.include('*.h', '*.cpp') }
             }
 
-            spec.from(project.rootProject.file('imgui-binding/src/main/native'))
             spec.into(jniDir)
+        }
+
+        project.copy {CopySpec spec ->
+            spec.from(project.rootProject.file('imgui-binding/src/main/native')).into(jniDir)
         }
 
         // Generate platform dependant ant configs and header files
@@ -100,10 +105,11 @@ class GenerateLibs extends DefaultTask {
         }
 
         if (forMac64) {
+            def minMacOsVersion = '10.15'
             def mac64 = BuildTarget.newDefaultTarget(BuildTarget.TargetOs.MacOsX, true)
-            mac64.cppFlags += ' -stdlib=libc++'
-            mac64.cppFlags = mac64.cppFlags.replaceAll('10.5', '10.9')
-            mac64.linkerFlags = mac64.linkerFlags.replaceAll('10.5', '10.9')
+            mac64.cppFlags += ' -std=c++14 -stdlib=libc++'
+            mac64.cppFlags = mac64.cppFlags.replace('10.5', minMacOsVersion).replace('10.7', minMacOsVersion)
+            mac64.linkerFlags = mac64.linkerFlags.replace('10.5', minMacOsVersion).replace('10.7', minMacOsVersion)
 
             if (withFreeType) {
                 mac64.cppFlags += ' -I/usr/local/include/freetype2 -I/usr/local/include/libpng16 -I/usr/local/include/harfbuzz -I/usr/local/include/glib-2.0 -I/usr/local/lib/glib-2.0/include'
@@ -117,7 +123,7 @@ class GenerateLibs extends DefaultTask {
 
         if (!withFreeType) {
             project.delete {
-                it.delete("$jniDir/imgui.ImGuiFreeType.cpp", "$jniDir/imgui.ImGuiFreeType.h")
+                it.delete("$jniDir/imgui_ImGuiFreeType.cpp", "$jniDir/imgui_ImGuiFreeType.h")
             }
         }
 
