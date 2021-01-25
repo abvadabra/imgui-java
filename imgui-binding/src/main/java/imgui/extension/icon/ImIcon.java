@@ -1,7 +1,10 @@
 package imgui.extension.icon;
 
 
-public class ImIcon {
+public final class ImIcon {
+
+    private ImIcon() {
+    }
 
      /*JNI
         #pragma warning (disable:4244)
