@@ -1,5 +1,5 @@
-# pragma once
-# include <imgui.h>
+#pragma once
+#include <imgui.h>
 
 namespace ax {
 namespace Drawing {

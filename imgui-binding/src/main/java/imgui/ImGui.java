@@ -50,10 +50,10 @@ public class ImGui {
             final String extractedLibAbsPath = tryLoadFromClasspath(fullLibName);
 
             try {
-                if (extractedLibAbsPath != null) {
-                    doLoadLibrary(extractedLibAbsPath);
-                } else if (libPath != null) {
-                    doLoadLibrary(Paths.get(libPath).resolve(fullLibName).toFile().getAbsolutePath());
+                if (libPath != null) {
+                    System.load(Paths.get(libPath).resolve(fullLibName).toFile().getAbsolutePath());
+                } else if (extractedLibAbsPath != null) {
+                    System.load(extractedLibAbsPath);
                 } else {
                     doLoadLibrary(libName);
                 }
