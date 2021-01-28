@@ -86,4 +86,6 @@ public final class ImGuiInputTextFlags {
      * You will be provided a new BufSize in the callback and NEED to honor it. (see misc/cpp/imgui_stdlib.h for an example of using this)
      */
     public static final int CallbackResize = 1 << 18;
+
+    public static final int WordWrapping = 1 << 22;
 }
