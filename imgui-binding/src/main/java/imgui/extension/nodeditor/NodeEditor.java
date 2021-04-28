@@ -377,6 +377,18 @@ public final class NodeEditor {
         return ed::QueryNewLink((ed::PinId*)&startId[0], (ed::PinId*)&endId[0], ImVec4(r, g, b, a), thickness);
     */
 
+    public static boolean queryNewNode(final ImLong startId) {
+        return nQueryNewNode(startId.getData(), 1, 1, 1, 1, 1);
+    }
+
+    public static boolean queryNewNode(final ImLong startId, final float r, final float g, final float b, final float a, final float thickness) {
+        return nQueryNewNode(startId.getData(), r, g, b, a, thickness);
+    }
+
+    private static native boolean nQueryNewNode(long[] startId, float r, float g, float b, float a, float thickness); /*
+        return ed::QueryNewNode((ed::PinId*)&startId[0], ImVec4(r, g, b, a), thickness);
+    */
+
     public static boolean acceptNewItem() {
         return acceptNewItem(1, 1, 1, 1, 1);
     }
