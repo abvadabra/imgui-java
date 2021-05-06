@@ -40,7 +40,7 @@ public final class ImNodes {
     }
 
     private static native void nEditorContextSet(long ptr); /*
-        imnodes::EditorContextSet((imnodes::EditorContext*)ptr);
+        imnodes::EditorContextSet((ImNodesEditorContext*)ptr);
     */
 
     /**
@@ -84,7 +84,7 @@ public final class ImNodes {
      * Use PushColorStyle and PopColorStyle to modify ImNodesColorStyle mid-frame.
      */
     public static native void pushColorStyle(int imNodesStyleColor, int color); /*
-        imnodes::PushColorStyle((imnodes::ColorStyle)imNodesStyleColor, color);
+        imnodes::PushColorStyle((ImNodesCol)imNodesStyleColor, color);
     */
 
     public static native void popColorStyle(); /*
@@ -92,7 +92,7 @@ public final class ImNodes {
     */
 
     public static native void pushStyleVar(int imNodesStyleVar, float value); /*
-        imnodes::PushStyleVar((imnodes::StyleVar)imNodesStyleVar, value);
+        imnodes::PushStyleVar((ImNodesStyleVar)imNodesStyleVar, value);
     */
 
     public static native void popStyleVar(); /*
@@ -171,7 +171,7 @@ public final class ImNodes {
     }
 
     public static native void beginInputAttribute(int id, int imNodesPinShape); /*
-        imnodes::BeginInputAttribute(id, (imnodes::PinShape)imNodesPinShape);
+        imnodes::BeginInputAttribute(id, (ImNodesPinShape)imNodesPinShape);
     */
 
     public static native void endInputAttribute(); /*
@@ -186,14 +186,14 @@ public final class ImNodes {
     }
 
     public static native void beginOutputAttribute(int id, int imNodesPinShape); /*
-        imnodes::BeginOutputAttribute(id, (imnodes::PinShape)imNodesPinShape);
+        imnodes::BeginOutputAttribute(id, (ImNodesPinShape)imNodesPinShape);
     */
 
     /**
      * Push a single AttributeFlags value. By default, only AttributeFlags_None is set.
      */
     public static native void pushAttributeFlag(int imNodesAttributeFlags); /*
-        imnodes::PushAttributeFlag((imnodes::AttributeFlags)imNodesAttributeFlags);
+        imnodes::PushAttributeFlag((ImNodesAttributeFlags)imNodesAttributeFlags);
     */
 
     public static native void endOutputAttribute(); /*
@@ -456,7 +456,7 @@ public final class ImNodes {
     }
 
     private static native String nSaveEditorStateToIniString(long context); /*
-        return env->NewStringUTF(imnodes::SaveEditorStateToIniString((imnodes::EditorContext*)context, NULL));
+        return env->NewStringUTF(imnodes::SaveEditorStateToIniString((ImNodesEditorContext*)context, NULL));
     */
 
     public static native void loadCurrentEditorStateFromIniString(String data, int dataSize); /*
@@ -468,7 +468,7 @@ public final class ImNodes {
     }
 
     private static native void nLoadEditorStateFromIniString(long context, String data, int dataSize); /*
-        imnodes::LoadEditorStateFromIniString((imnodes::EditorContext*)context, data, dataSize);
+        imnodes::LoadEditorStateFromIniString((ImNodesEditorContext*)context, data, dataSize);
     */
 
     public static native void saveCurrentEditorStateToIniFile(String fileName); /*
@@ -480,7 +480,7 @@ public final class ImNodes {
     }
 
     private static native void nSaveEditorStateToIniFile(long context, String fileName); /*
-        imnodes::SaveEditorStateToIniFile((imnodes::EditorContext*)context, fileName);
+        imnodes::SaveEditorStateToIniFile((ImNodesEditorContext*)context, fileName);
     */
 
     public static native void loadCurrentEditorStateFromIniFile(String fileName); /*
@@ -492,6 +492,6 @@ public final class ImNodes {
     }
 
     private static native void nLoadEditorStateFromIniFile(long context, String fileName); /*
-        imnodes::LoadEditorStateFromIniFile((imnodes::EditorContext*)context, fileName);
+        imnodes::LoadEditorStateFromIniFile((ImNodesEditorContext*)context, fileName);
     */
 }
