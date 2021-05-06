@@ -20,10 +20,7 @@ public final class ImFontConfig extends ImGuiStructDestroyable {
     }
 
     /*JNI
-        #include <stdint.h>
-        #include <imgui.h>
-        #include "jni_common.h"
-        #include "jni_binding_struct.h"
+        #include "_common.h"
 
         #define IM_FONT_CONFIG ((ImFontConfig*)STRUCT_PTR)
      */
@@ -116,6 +113,7 @@ public final class ImFontConfig extends ImGuiStructDestroyable {
 
     /**
      * Rasterize at higher quality for sub-pixel positioning.
+     * Note the difference between 2 and 3 is minimal so you can reduce this to 2 to save memory.
      * Read https://github.com/nothings/stb/blob/master/tests/oversample/README.md for details.
      */
     public native int getOversampleH(); /*
@@ -124,6 +122,7 @@ public final class ImFontConfig extends ImGuiStructDestroyable {
 
     /**
      * Rasterize at higher quality for sub-pixel positioning.
+     * Note the difference between 2 and 3 is minimal so you can reduce this to 2 to save memory.
      * Read https://github.com/nothings/stb/blob/master/tests/oversample/README.md for details.
      */
     public native void setOversampleH(int oversampleH); /*
@@ -132,7 +131,7 @@ public final class ImFontConfig extends ImGuiStructDestroyable {
 
     /**
      * Rasterize at higher quality for sub-pixel positioning.
-     * We don't use sub-pixel positions on the Y axis.
+     * This is not really useful as we don't use sub-pixel positions on the Y axis.
      */
     public native int getOversampleV(); /*
         return IM_FONT_CONFIG->OversampleV;
@@ -140,7 +139,7 @@ public final class ImFontConfig extends ImGuiStructDestroyable {
 
     /**
      * Rasterize at higher quality for sub-pixel positioning.
-     * We don't use sub-pixel positions on the Y axis.
+     * This is not really useful as we don't use sub-pixel positions on the Y axis.
      */
     public native void setOversampleV(int oversampleV); /*
         IM_FONT_CONFIG->OversampleV = oversampleV;
@@ -161,6 +160,15 @@ public final class ImFontConfig extends ImGuiStructDestroyable {
     public native void setPixelSnapH(boolean isPixelSnapH); /*
         IM_FONT_CONFIG->PixelSnapH = isPixelSnapH;
     */
+
+    /**
+     * Extra spacing (in pixels) between glyphs. Only X axis is supported for now.
+     */
+    public ImVec2 getGlyphExtraSpacing() {
+        final ImVec2 value = new ImVec2();
+        getGlyphExtraSpacing(value);
+        return value;
+    }
 
     /**
      * Extra spacing (in pixels) between glyphs. Only X axis is supported for now.
@@ -190,6 +198,15 @@ public final class ImFontConfig extends ImGuiStructDestroyable {
         IM_FONT_CONFIG->GlyphExtraSpacing.x = x;
         IM_FONT_CONFIG->GlyphExtraSpacing.y = y;
     */
+
+    /**
+     * Offset all glyphs from this font input.
+     */
+    public ImVec2 getGlyphOffset() {
+        final ImVec2 value = new ImVec2();
+        getGlyphOffset(value);
+        return value;
+    }
 
     /**
      * Offset all glyphs from this font input.
@@ -286,17 +303,17 @@ public final class ImFontConfig extends ImGuiStructDestroyable {
     */
 
     /**
-     * Settings for custom font rasterizer (e.g. ImGuiFreeType). Leave as zero if you aren't using one.
+     * Settings for custom font builder. THIS IS BUILDER IMPLEMENTATION DEPENDENT. Leave as zero if unsure.
      */
-    public native int getRasterizerFlags(); /*
-        return IM_FONT_CONFIG->RasterizerFlags;
+    public native int getFontBuilderFlags(); /*
+        return IM_FONT_CONFIG->FontBuilderFlags;
     */
 
     /**
-     * Settings for custom font rasterizer (e.g. ImGuiFreeType). Leave as zero if you aren't using one.
+     * Settings for custom font builder. THIS IS BUILDER IMPLEMENTATION DEPENDENT. Leave as zero if unsure.
      */
-    public native void setRasterizerFlags(int rasterizerFlags); /*
-        IM_FONT_CONFIG->RasterizerFlags = (unsigned int)rasterizerFlags;
+    public native void setFontBuilderFlags(int fontBuilderFlags); /*
+        IM_FONT_CONFIG->FontBuilderFlags = (unsigned int)fontBuilderFlags;
     */
 
     /**
@@ -323,7 +340,7 @@ public final class ImFontConfig extends ImGuiStructDestroyable {
     /**
      * Explicitly specify unicode codepoint of ellipsis character. When fonts are being merged first specified ellipsis will be used.
      */
-    public native void setEllipsisChar(short ellipsisChar); /*
+    public native void setEllipsisChar(int ellipsisChar); /*
         IM_FONT_CONFIG->EllipsisChar = (ImWchar)ellipsisChar;
     */
 

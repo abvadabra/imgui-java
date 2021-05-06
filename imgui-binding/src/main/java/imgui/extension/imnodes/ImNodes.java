@@ -12,16 +12,13 @@ import imgui.type.ImInt;
  * Refer to the library's Github page for examples and support
  */
 public final class ImNodes {
-    private static ImNodesStyle style;
+    private static final ImNodesStyle STYLE = new ImNodesStyle(0);
 
     private ImNodes() {
     }
 
     /*JNI
-        #include <stdint.h>
-        #include <imgui.h>
-        #include <imnodes.h>
-        #include "jni_common.h"
+        #include "_imnodes.h"
      */
 
     // An editor context corresponds to a set of nodes in a single workspace (created with a single
@@ -49,22 +46,20 @@ public final class ImNodes {
     /**
      * Initialize the node editor system.
      */
-    public static native void initialize(); /*
-        imnodes::Initialize();
+    public static native void createContext(); /*
+        imnodes::CreateContext();
     */
 
-    public static native void shutdown(); /*
-        imnodes::Shutdown();
+    public static native void destroyContext(); /*
+        imnodes::DestroyContext();
     */
 
     /**
      * Returns the global style struct. See the struct declaration for default values.
      */
     public static ImNodesStyle getStyle() {
-        if (style == null) {
-            style = new ImNodesStyle(nGetStyle());
-        }
-        return style;
+        STYLE.ptr = nGetStyle();
+        return STYLE;
     }
 
     private static native long nGetStyle(); /*

@@ -15,10 +15,7 @@ public final class ImGuiViewport extends ImGuiStruct {
     }
 
     /*JNI
-        #include <stdint.h>
-        #include <imgui.h>
-        #include "jni_common.h"
-        #include "jni_binding_struct.h"
+        #include "_common.h"
 
         #define IMGUI_VIEWPORT ((ImGuiViewport*)STRUCT_PTR)
      */
@@ -75,6 +72,15 @@ public final class ImGuiViewport extends ImGuiStruct {
     /**
      * Main Area: Position of the viewport (the imgui coordinates are the same as OS desktop/native coordinates).
      */
+    public ImVec2 getPos() {
+        final ImVec2 value = new ImVec2();
+        getPos(value);
+        return value;
+    }
+
+    /**
+     * Main Area: Position of the viewport (the imgui coordinates are the same as OS desktop/native coordinates).
+     */
     public native void getPos(ImVec2 dstImVec2); /*
         Jni::ImVec2Cpy(env, &IMGUI_VIEWPORT->Pos, dstImVec2);
     */
@@ -99,6 +105,15 @@ public final class ImGuiViewport extends ImGuiStruct {
     public native void setPos(float x, float y); /*
         IMGUI_VIEWPORT->Pos = ImVec2(x, y);
     */
+
+    /**
+     * Main Area: Size of the viewport.
+     */
+    public ImVec2 getSize() {
+        final ImVec2 value = new ImVec2();
+        getSize(value);
+        return value;
+    }
 
     /**
      * Main Area: Size of the viewport.
@@ -129,63 +144,77 @@ public final class ImGuiViewport extends ImGuiStruct {
     */
 
     /**
-     * Work Area: Offset from Pos to top-left corner of Work Area. Generally (0,0) or (0,+main_menu_bar_height).
-     * Work Area is Full Area but without menu-bars/status-bars (so WorkArea always fit inside Pos/Size!)
+     * Work Area: Position of the viewport minus task bars, menus bars, status bars.
      */
-    public native void getWorkOffsetMin(ImVec2 dstImVec2); /*
-        Jni::ImVec2Cpy(env, &IMGUI_VIEWPORT->WorkOffsetMin, dstImVec2);
+    public ImVec2 getWorkPos() {
+        final ImVec2 value = new ImVec2();
+        getWorkPos(value);
+        return value;
+    }
+
+    /**
+     * Work Area: Position of the viewport minus task bars, menus bars, status bars.
+     */
+    public native void getWorkPos(ImVec2 dstImVec2); /*
+        Jni::ImVec2Cpy(env, IMGUI_VIEWPORT->WorkPos, dstImVec2);
     */
 
     /**
-     * Work Area: Offset from Pos to top-left corner of Work Area. Generally (0,0) or (0,+main_menu_bar_height).
-     * Work Area is Full Area but without menu-bars/status-bars (so WorkArea always fit inside Pos/Size!)
+     * Work Area: Position of the viewport minus task bars, menus bars, status bars.
      */
-    public native float getWorkOffsetMinX(); /*
-        return IMGUI_VIEWPORT->WorkOffsetMin.x;
+    public native float getWorkPosX(); /*
+        return IMGUI_VIEWPORT->WorkPos.x;
     */
 
     /**
-     * Work Area: Offset from Pos to top-left corner of Work Area. Generally (0,0) or (0,+main_menu_bar_height).
-     * Work Area is Full Area but without menu-bars/status-bars (so WorkArea always fit inside Pos/Size!)
+     * Work Area: Position of the viewport minus task bars, menus bars, status bars.
      */
-    public native float getWorkOffsetMinY(); /*
-        return IMGUI_VIEWPORT->WorkOffsetMin.y;
+    public native float getWorkPosY(); /*
+        return IMGUI_VIEWPORT->WorkPos.y;
     */
 
     /**
-     * Work Area: Offset from Pos to top-left corner of Work Area. Generally (0,0) or (0,+main_menu_bar_height).
-     * Work Area is Full Area but without menu-bars/status-bars (so WorkArea always fit inside Pos/Size!)
+     * Work Area: Position of the viewport minus task bars, menus bars, status bars.
      */
-    public native void seWorkOffsetMin(float x, float y); /*
-        IMGUI_VIEWPORT->WorkOffsetMin = ImVec2(x, y);
+    public native void setWorkPos(float x, float y); /*
+        IMGUI_VIEWPORT->WorkPos = ImVec2(x, y);
     */
 
     /**
-     * Work Area: Offset from Pos+Size to bottom-right corner of Work Area. Generally (0,0) or (0,-status_bar_height).
+     * Work Area: Size of the viewport minus task bars, menu bars, status bars.
      */
-    public native void getWorkOffsetMax(ImVec2 dstImVec2); /*
-        Jni::ImVec2Cpy(env, &IMGUI_VIEWPORT->WorkOffsetMax, dstImVec2);
+    public ImVec2 getWorkSize() {
+        final ImVec2 value = new ImVec2();
+        getWorkSize(value);
+        return value;
+    }
+
+    /**
+     * Work Area: Size of the viewport minus task bars, menu bars, status bars.
+     */
+    public native void getWorkSize(ImVec2 dstImVec2); /*
+        Jni::ImVec2Cpy(env, IMGUI_VIEWPORT->WorkSize, dstImVec2);
     */
 
     /**
-     * Work Area: Offset from Pos+Size to bottom-right corner of Work Area. Generally (0,0) or (0,-status_bar_height).
+     * Work Area: Size of the viewport minus task bars, menu bars, status bars.
      */
-    public native float getWorkOffsetMaxX(); /*
-        return IMGUI_VIEWPORT->WorkOffsetMax.x;
+    public native float getWorkSizeX(); /*
+        return IMGUI_VIEWPORT->WorkSize.x;
     */
 
     /**
-     * Work Area: Offset from Pos+Size to bottom-right corner of Work Area. Generally (0,0) or (0,-status_bar_height).
+     * Work Area: Size of the viewport minus task bars, menu bars, status bars.
      */
-    public native float getWorkOffsetMaxY(); /*
-        return IMGUI_VIEWPORT->WorkOffsetMax.y;
+    public native float getWorkSizeY(); /*
+        return IMGUI_VIEWPORT->WorkSize.y;
     */
 
     /**
-     * Work Area: Offset from Pos+Size to bottom-right corner of Work Area. Generally (0,0) or (0,-status_bar_height).
+     * Work Area: Size of the viewport minus task bars, menu bars, status bars.
      */
-    public native void seWorkOffsetMax(float x, float y); /*
-        IMGUI_VIEWPORT->WorkOffsetMax = ImVec2(x, y);
+    public native void setWorkSize(float x, float y); /*
+        IMGUI_VIEWPORT->WorkSize = ImVec2(x, y);
     */
 
     /**
@@ -203,18 +232,6 @@ public final class ImGuiViewport extends ImGuiStruct {
     */
 
     /**
-     * The ImDrawData corresponding to this viewport. Valid after Render() and until the next call to NewFrame().
-     */
-    public ImDrawData getDrawData() {
-        DRAW_DATA.ptr = nGetDrawData();
-        return DRAW_DATA;
-    }
-
-    private native long nGetDrawData(); /*
-        return (intptr_t)IMGUI_VIEWPORT->DrawData;
-    */
-
-    /**
      * (Advanced) 0: no parent. Instruct the platform backend to setup a parent/child relationship between platform windows.
      */
     public native int getParentViewportId(); /*
@@ -226,6 +243,18 @@ public final class ImGuiViewport extends ImGuiStruct {
      */
     public native void setParentViewportId(int parentViewportId); /*
         IMGUI_VIEWPORT->ParentViewportId = parentViewportId;
+    */
+
+    /**
+     * The ImDrawData corresponding to this viewport. Valid after Render() and until the next call to NewFrame().
+     */
+    public ImDrawData getDrawData() {
+        DRAW_DATA.ptr = nGetDrawData();
+        return DRAW_DATA;
+    }
+
+    private native long nGetDrawData(); /*
+        return (intptr_t)IMGUI_VIEWPORT->DrawData;
     */
 
     // Our design separate the Renderer and Platform backends to facilitate combining default backends with each others.
@@ -337,7 +366,13 @@ public final class ImGuiViewport extends ImGuiStruct {
         IMGUI_VIEWPORT->PlatformRequestClose = platformRequestClose;
     */
 
-    // Access work-area rectangle with GetWorkXXX functions (see comments above)
+    // Helpers
+
+    public ImVec2 getCenter() {
+        final ImVec2 value = new ImVec2();
+        getCenter(value);
+        return value;
+    }
 
     public native void getCenter(ImVec2 dstImVec2); /*
         Jni::ImVec2Cpy(env, IMGUI_VIEWPORT->GetCenter(), dstImVec2);
@@ -351,27 +386,21 @@ public final class ImGuiViewport extends ImGuiStruct {
         return IMGUI_VIEWPORT->GetCenter().y;
     */
 
-    public native void getWorkPos(ImVec2 dstImVec2); /*
-        Jni::ImVec2Cpy(env, IMGUI_VIEWPORT->GetWorkPos(), dstImVec2);
+    public ImVec2 getWorkCenter() {
+        final ImVec2 value = new ImVec2();
+        getWorkCenter(value);
+        return value;
+    }
+
+    public native void getWorkCenter(ImVec2 dstImVec2); /*
+        Jni::ImVec2Cpy(env, IMGUI_VIEWPORT->GetWorkCenter(), dstImVec2);
     */
 
-    public native float getWorkPosX(); /*
-        return IMGUI_VIEWPORT->GetWorkPos().x;
+    public native float getWorkCenterX(); /*
+        return IMGUI_VIEWPORT->GetWorkCenter().x;
     */
 
-    public native float getWorkPosY(); /*
-        return IMGUI_VIEWPORT->GetWorkPos().y;
-    */
-
-    public native void getWorkSize(ImVec2 dstImVec2); /*
-        Jni::ImVec2Cpy(env, IMGUI_VIEWPORT->GetWorkSize(), dstImVec2);
-    */
-
-    public native float getWorkSizeX(); /*
-        return IMGUI_VIEWPORT->GetWorkSize().x;
-    */
-
-    public native float getWorkSizeY(); /*
-        return IMGUI_VIEWPORT->GetWorkSize().y;
+    public native float getWorkCenterY(); /*
+        return IMGUI_VIEWPORT->GetWorkCenter().y;
     */
 }

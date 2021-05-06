@@ -3,6 +3,7 @@ package imgui.extension.nodeditor;
 import imgui.ImVec2;
 import imgui.ImVec4;
 import imgui.binding.ImGuiStruct;
+import imgui.extension.nodeditor.flag.NodeEditorStyleColor;
 
 public final class NodeEditorStyle extends ImGuiStruct {
     public NodeEditorStyle(final long ptr) {
@@ -10,17 +11,19 @@ public final class NodeEditorStyle extends ImGuiStruct {
     }
 
     /*JNI
-        #include <stdint.h>
-        #include <imgui.h>
-        #include <imgui_node_editor.h>
-        #include <imgui_node_editor_internal.h>
-        #include "jni_common.h"
-        #include "jni_binding_struct.h"
+        #include "_nodeeditor.h"
 
         namespace ed = ax::NodeEditor;
 
         #define IM_NODE_EDITOR_STYLE ((ed::Style*)STRUCT_PTR)
      */
+
+    public ImVec4 getNodePadding() {
+        final ImVec4 value = new ImVec4();
+        getNodePadding(value);
+        return value;
+    }
+
 
     public native void getNodePadding(ImVec4 dstImVec4); /*
         Jni::ImVec4Cpy(env, IM_NODE_EDITOR_STYLE->NodePadding, dstImVec4);
@@ -89,6 +92,12 @@ public final class NodeEditorStyle extends ImGuiStruct {
        IM_NODE_EDITOR_STYLE->LinkStrength = linkStrength;
     */
 
+    public ImVec2 getSourceDirection() {
+        final ImVec2 value = new ImVec2();
+        getSourceDirection(value);
+        return value;
+    }
+
     public native void getSourceDirection(ImVec2 dstImVec2); /*
        Jni::ImVec2Cpy(env, &IM_NODE_EDITOR_STYLE->SourceDirection, dstImVec2);
     */
@@ -105,6 +114,12 @@ public final class NodeEditorStyle extends ImGuiStruct {
        IM_NODE_EDITOR_STYLE->SourceDirection.x = x;
        IM_NODE_EDITOR_STYLE->SourceDirection.y = y;
     */
+
+    public ImVec2 getTargetDirection() {
+        final ImVec2 value = new ImVec2();
+        getTargetDirection(value);
+        return value;
+    }
 
     public native void getTargetDirection(ImVec2 dstImVec2); /*
        Jni::ImVec2Cpy(env, &IM_NODE_EDITOR_STYLE->TargetDirection, dstImVec2);
@@ -156,6 +171,12 @@ public final class NodeEditorStyle extends ImGuiStruct {
        IM_NODE_EDITOR_STYLE->FlowDuration = flowDuration;
     */
 
+    public ImVec2 getPivotAlignment() {
+        final ImVec2 value = new ImVec2();
+        getPivotAlignment(value);
+        return value;
+    }
+
     public native void getPivotAlignment(ImVec2 dstImVec2); /*
        Jni::ImVec2Cpy(env, &IM_NODE_EDITOR_STYLE->PivotAlignment, dstImVec2);
     */
@@ -173,6 +194,12 @@ public final class NodeEditorStyle extends ImGuiStruct {
        IM_NODE_EDITOR_STYLE->PivotAlignment.y = y;
     */
 
+    public ImVec2 getPivotSize() {
+        final ImVec2 value = new ImVec2();
+        getPivotSize(value);
+        return value;
+    }
+
     public native void getPivotSize(ImVec2 dstImVec2); /*
        Jni::ImVec2Cpy(env, &IM_NODE_EDITOR_STYLE->PivotSize, dstImVec2);
     */
@@ -189,6 +216,12 @@ public final class NodeEditorStyle extends ImGuiStruct {
        IM_NODE_EDITOR_STYLE->PivotSize.x = x;
        IM_NODE_EDITOR_STYLE->PivotSize.y = y;
     */
+
+    public ImVec2 getPivotScale() {
+        final ImVec2 value = new ImVec2();
+        getPivotScale(value);
+        return value;
+    }
 
     public native void getPivotScale(ImVec2 dstImVec2); /*
        Jni::ImVec2Cpy(env, &IM_NODE_EDITOR_STYLE->PivotScale, dstImVec2);
@@ -255,6 +288,27 @@ public final class NodeEditorStyle extends ImGuiStruct {
        IM_NODE_EDITOR_STYLE->GroupBorderWidth = groupBorderWidth;
     */
 
+    public float[][] getColors() {
+        final float[][] colors = new float[NodeEditorStyleColor.COUNT][4];
+        getColors(colors);
+        return colors;
+    }
+
+    public native void getColors(float[][] buff); /*
+        for (int i = 0; i < ed::StyleColor_Count; i++) {
+            jfloatArray jColors = (jfloatArray)env->GetObjectArrayElement(buff, i);
+            jfloat* jBuffColor = env->GetFloatArrayElements(jColors, 0);
+
+            jBuffColor[0] = IM_NODE_EDITOR_STYLE->Colors[i].x;
+            jBuffColor[1] = IM_NODE_EDITOR_STYLE->Colors[i].y;
+            jBuffColor[2] = IM_NODE_EDITOR_STYLE->Colors[i].z;
+            jBuffColor[3] = IM_NODE_EDITOR_STYLE->Colors[i].w;
+
+            env->ReleaseFloatArrayElements(jColors, jBuffColor, 0);
+            env->DeleteLocalRef(jColors);
+        }
+    */
+
     /**
      * BINDING NOTICE: colors is a 2d array with sizes: [StyleColor_Count][4]
      */
@@ -272,6 +326,12 @@ public final class NodeEditorStyle extends ImGuiStruct {
             env->DeleteLocalRef(jColors);
         }
     */
+
+    public ImVec4 getColor(final int styleColor) {
+        final ImVec4 value = new ImVec4();
+        getColor(styleColor, value);
+        return value;
+    }
 
     public native void getColor(int styleColor, ImVec4 dstImVec4); /*
         Jni::ImVec4Cpy(env, IM_NODE_EDITOR_STYLE->Colors[styleColor], dstImVec4);

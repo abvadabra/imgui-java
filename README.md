@@ -1,154 +1,189 @@
 # imgui-java 
-![CI Build](https://github.com/SpaiR/imgui-java/workflows/CI%20Build/badge.svg) [![javadoc](https://javadoc.io/badge2/io.imgui.java/imgui-java-binding/javadoc.svg)](https://javadoc.io/doc/io.imgui.java/imgui-java-binding) [![JCenter](https://img.shields.io/bintray/v/spair/io.imgui.java/imgui-java-binding.svg?label=binding)](https://bintray.com/spair/io.imgui.java/imgui-java-binding/_latestVersion) [![JCenter](https://img.shields.io/bintray/v/spair/io.imgui.java/imgui-java-lwjgl3.svg?label=lwjgl3)](https://bintray.com/spair/io.imgui.java/imgui-java-lwjgl3/_latestVersion)
+[![Github All Releases](https://img.shields.io/github/downloads/SpaiR/imgui-java/total.svg?logo=github)](https://github.com/SpaiR/imgui-java/releases)
+[![CI Build](https://github.com/SpaiR/imgui-java/workflows/CI%20Build/badge.svg)](https://github.com/SpaiR/imgui-java/actions?query=workflow%3A%22CI+Build%22)
+[![Maven Central](https://img.shields.io/maven-central/v/io.github.spair/imgui-java-binding?logo=apache-maven)](https://search.maven.org/search?q=g:io.github.spair%20AND%20a:imgui-java-*)
+[![binding javadoc](https://javadoc.io/badge2/io.github.spair/imgui-java-binding/javadoc_binding.svg?logo=java)](https://javadoc.io/doc/io.github.spair/imgui-java-binding)
+[![app javadoc](https://javadoc.io/badge2/io.github.spair/imgui-java-app/javadoc_app.svg?logo=java)](https://javadoc.io/doc/io.github.spair/imgui-java-app)
 
-JNI based binding for [Dear ImGui](https://github.com/ocornut/imgui) with no dependencies, ready to use pre-compiled binaries and renderer for [LWJGL3](https://www.lwjgl.org/).
+## Important News!
+_(If you are using raw jars, you can skip this section.)_<br>
+Because of [JCenter shutdown](https://jfrog.com/blog/into-the-sunset-bintray-jcenter-gocenter-and-chartcenter/) library has moved to Maven Central.
+That fact affects nothing, but the groupId parameter in your Gradle and Maven configuration files.
+From version `1.80-1.5.0` use `io.github.spair` instead of `io.imgui.java`. See an updated [How To Use](#how-to-use) section for details.
 
-Please read **Binding Notice** to get more info about java-specific things of the API.<br>
-See official [documentation](https://github.com/ocornut/imgui#usage) and [wiki](https://github.com/ocornut/imgui/wiki) to get more info about how to do things in Dear ImGui. 
+**<ins>Old versions will not be transferred to Maven Central and will become unavailable after JCenter goes down.</ins>**
 
-Binding provides all the data you need to render Dear ImGui. If, for some reason, you want to use your own backend renderer, see [ImGuiImplGl3](https://github.com/SpaiR/imgui-java/blob/v1.79-1.4.0/imgui-lwjgl3/src/main/java/imgui/gl3/ImGuiImplGl3.java) for reference.
+---
 
-Versioning semantic of the binding: `imguiVersion-bindingVersion`.<br>
-For example `1.74-0.1` means that imgui-java uses `1.74` version of Dear ImGui and binding itself has the version `0.1`.
+JNI based binding for [Dear ImGui](https://github.com/ocornut/imgui) with no dependencies.<br>
+Read official [documentation](https://github.com/ocornut/imgui#usage) and [wiki](https://github.com/ocornut/imgui/wiki) to see how to work with Dear ImGui.
+Almost everything from C++ could be done in Java in the same way.
 
-Additional available features:
- - [Multi-Viewports/Docking](#using-multi-viewports-and-docking)
- - [FreeType font renderer](#using-freetype)
+Binding has an OpenGL renderer and a GLFW backend implementation, using a [LWJGL3](https://www.lwjgl.org/) library. Could be found in [imgui-lwjgl3](https://github.com/SpaiR/imgui-java/blob/v1.82.2/imgui-lwjgl3) module.<br>
+They are recommended, yet optional to use. The advantage of Dear ImGui is a portability, so feel free to copy-paste classes or write your own implementations.<br>
 
-## How to Try
+Additionally, there is an [imgui-app](https://github.com/SpaiR/imgui-java/blob/v1.82.2/imgui-app) module, which provides **a high abstraction layer**.<br>
+It hides all low-level stuff under one class to extend, so you can build your GUI application instantly.
+
+### Features
+- **Small and Efficient**<br>
+  Binding has a very small memory footprint and uses direct native calls to work.<br>
+- **Fully Featured**<br>
+  All public API was carefully implemented with Java usage in mind.<br>
+- **Multi-Viewports/Docking Branch**<br>
+  Binding has a full support of [Multi-Viewports](https://github.com/ocornut/imgui/wiki/Multi-Viewports) and [Docking](https://github.com/ocornut/imgui/wiki/Docking). <br>
+- **FreeType Font Renderer**<br>
+  FreeType font renderer provides a much better fonts quality. [See how to use](#freetype).<br>
+- **Extensions**<br>
+  Binding includes several useful [extensions](https://github.com/ocornut/imgui/wiki/Useful-Widgets) for Dear ImGui. [See full list](#extensions).
+
+# How to Try
 _Make sure you have installed Java 8 or higher._
 
-You can try Dear ImGui with Java by yourself in a three simple steps:
+<p align="center"><img src="https://i.imgur.com/clYSVjG.png"/></p>
+
+### [Demo](https://i.imgur.com/c0ds1EZ.gif)
+
+You can try binding by yourself in three simple steps:
 
 ```
-git clone --branch v1.79-1.4.0 https://github.com/SpaiR/imgui-java.git
+git clone --branch v1.82.2 https://github.com/SpaiR/imgui-java.git
 cd imgui-java
-gradlew :imgui-lwjgl3:startExample
+./gradlew :example:run
 ```
 
-That's all! You will start an example app [ImGuiGlfwExample](https://github.com/SpaiR/imgui-java/blob/v1.79-1.4.0/imgui-lwjgl3/src/test/java/ImGuiGlfwExample.java). Feel free to modify [ExampleUi](https://github.com/SpaiR/imgui-java/blob/v1.79-1.4.0/imgui-lwjgl3/src/test/java/ExampleUi.java) class to try different Dear ImGui widgets in action.
+See [example](https://github.com/SpaiR/imgui-java/blob/v1.82.2/example) module to try other widgets in action.
 
-![imgui-java demo](https://i.imgur.com/WbnnhCn.gif)
+# How To Use
+**[ImGui in LWJGL YouTube video](https://youtu.be/Xq-eVcNtUbw)** by [GamesWithGabe](https://www.youtube.com/channel/UCQP4qSCj1eHMHisDDR4iPzw).<br>
+You can use this video as a basic step-by-step tutorial. It shows how to integrate binding with the usage of jar files. Gradle and Maven dependecies could be used for this purpose as well.
 
-## How to Use
+Take a note, that integration itself is a very flexible process. It could be done in one way or another. If you just need a framework for your GUI - use **Application** module. Otherwise, if you need more control, the best way is not just to repeat steps, but to understand what each step does.
+
+## Application
+If you don't care about OpenGL or other low-level stuff, then you can use application layer from [imgui-app](https://github.com/SpaiR/imgui-java/blob/v1.82.2/imgui-app) module.
+It is a **one jar solution** which includes: GLFW, OpenGL and Dear ImGui itself. So you only need **one dependency** line or **one jar in classpath** to make everything to work. <ins>You don't need to add separate dependencies to LWJGL or native libraries, since they are already included.</ins><br>
+Application module is the best choice if everything you care is the GUI for your app.
+
+At the same time, Application gives an option to override any life-cycle method it has. That means that if you're seeking for a bit more low-level control - you can gain it too.
+
+#### Example
+A very simple application may look like this:
+```
+import imgui.ImGui;
+import imgui.app.Application;
+
+public class Main extends Application {
+    @Override
+    protected void configure(Configuration config) {
+        config.setTitle("Dear ImGui is Awesome!");
+    }
+
+    @Override
+    public void process() {
+        ImGui.text("Hello, World!");
+    }
+
+    public static void main(String[] args) {
+        launch(new Main());
+    }
+}
+```
+Read `imgui.app.Application` [javadoc](https://javadoc.io/doc/io.github.spair/imgui-java-app) to understand how it works under the hood.
+
+#### Dependencies
 
 <details>
-        <summary><b>With Gradle</b></summary>
+        <summary><b>Gradle</b></summary>
 
 ```
 repositories {
-    jcenter()
     mavenCentral()
 }
 
-ext {
-    lwjglVersion = '3.2.3'
-    imguiVersion = '1.79-1.4.0'
-}
-
-switch (OperatingSystem.current()) {
-	case OperatingSystem.LINUX:
-		project.ext.imguiNatives = "imgui-java-natives-linux"
-		project.ext.lwjglNatives = "natives-linux"
-		break
-	case OperatingSystem.MAC_OS:
-		project.ext.imguiNatives = "imgui-java-natives-macos"
-		project.ext.lwjglNatives = "natives-macos"
-		break
-	case OperatingSystem.WINDOWS:
-		project.ext.imguiNatives = System.getProperty("os.arch").contains("64") ? "imgui-java-natives-windows" : "imgui-java-natives-windows-x86"
-		project.ext.lwjglNatives = System.getProperty("os.arch").contains("64") ? "natives-windows" : "natives-windows-x86"
-		break
-}
-
 dependencies {
-    implementation "io.imgui.java:imgui-java-binding:$imguiVersion"
-    implementation "io.imgui.java:imgui-java-lwjgl3:$imguiVersion"
-    runtimeOnly "io.imgui.java:$imguiNatives:$imguiVersion"
-
-    implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
-
-    ['', '-opengl', '-glfw'].each {
-        implementation "org.lwjgl:lwjgl$it:$lwjglVersion"
-        runtimeOnly "org.lwjgl:lwjgl$it::$lwjglNatives"
-    }
+    implementation "io.github.spair:imgui-java-app:1.82.2"
 }
 ```
 </details>
 
 <details>
-        <summary><b>With Maven</b></summary>
+        <summary><b>Maven</b></summary>
 
 ```
-<!-- Used to import imgui-java -->
-<repositories>
-    <repository>
-        <id>jcenter</id>
-        <url>https://jcenter.bintray.com/</url>
-    </repository>
-</repositories>
+<dependencies>
+    <dependency>
+        <groupId>io.github.spair</groupId>
+        <artifactId>imgui-java-app</artifactId>
+        <version>1.82.2</version>
+    </dependency>
+</dependencies>
+```
+</details>
 
+<details>
+        <summary><b>Raw Jar</b></summary>
+
+1. Go to the [release page](https://github.com/SpaiR/imgui-java/releases/latest);
+2. Download `imgui-app-${version}.jar`;
+3. Add the jar to your classpath.
+</details>
+
+## Binding
+Using binding without the wrapper requires to "attach" it to your application manually.
+You can refer to [imgui-app](https://github.com/SpaiR/imgui-java/blob/v1.82.2/imgui-app) module and see how things are done there.
+
+### Dependencies
+For simplicity, example of dependencies for Gradle/Maven only shows how to add natives for Windows.
+Feel free to add other platforms.
+
+| Native Binaries                | System        |
+| ------------------------------ | ------------- |
+| imgui-java-natives-windows-x86 | Windows 32bit |
+| imgui-java-natives-windows     | Windows 64bit |
+| imgui-java-natives-linux-x86   | Linux 32bit   |
+| imgui-java-natives-linux       | Linux 64bit   |
+| imgui-java-natives-macos       | MacOS         |
+
+Take a note, that you also need to add dependencies to [LWJGL](https://www.lwjgl.org/). Examples below shows how to do it as well.
+
+<details>
+        <summary><b>Gradle</b></summary>
+
+```
+repositories {
+    mavenCentral()
+}
+
+ext {
+    lwjglVersion = '3.2.3'
+    imguiVersion = '1.82.2'
+}
+
+dependencies {
+    implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
+
+    ['', '-opengl', '-glfw'].each {
+        implementation "org.lwjgl:lwjgl$it:$lwjglVersion"
+        implementation "org.lwjgl:lwjgl$it::natives-windows"
+    }
+    
+    implementation "io.github.spair:imgui-java-binding:$imguiVersion"
+    implementation "io.github.spair:imgui-java-lwjgl3:$imguiVersion"
+    
+    implementation "io.github.spair:imgui-java-natives-windows:$imguiVersion"
+}
+```
+</details>
+
+<details>
+        <summary><b>Maven</b></summary>
+
+```
 <properties>
     <lwjgl.version>3.2.3</lwjgl.version>
-    <imgui.java.version>1.79-1.4.0</imgui.java.version>
+    <imgui.java.version>1.82.2</imgui.java.version>
 </properties>
-
-<!-- Resolve OS version for native libraries -->
-<!-- imgui-java uses the same naming convention as LWJGL3 -->
-<profiles>
-    <profile>
-        <id>natives-linux-amd64</id>
-        <activation>
-            <os>
-                <family>unix</family>
-                <arch>amd64</arch>
-            </os>
-        </activation>
-        <properties>
-            <imguiNatives>imgui-java-natives-linux</imguiNatives>
-            <lwjglNatives>natives-linux</lwjglNatives>
-        </properties>
-    </profile>
-    <profile>
-        <id>natives-macos-amd64</id>
-        <activation>
-            <os>
-                <family>mac</family>
-                <arch>amd64</arch>
-            </os>
-        </activation>
-        <properties>
-            <imguiNatives>imgui-java-natives-macos</lwjgl.imguiNatives>
-            <lwjglNatives>natives-macos</lwjgl.lwjglNatives>
-        </properties>
-    </profile>
-    <profile>
-        <id>natives-windows-amd64</id>
-        <activation>
-            <os>
-                <family>windows</family>
-                <arch>amd64</arch>
-            </os>
-        </activation>
-        <properties>
-            <imguiNatives>imgui-java-natives-windows</imguiNatives>
-            <lwjglNatives>natives-windows</lwjglNatives>
-        </properties>
-    </profile>
-    <profile>
-        <id>natives-windows-x86</id>
-        <activation>
-            <os>
-                <family>windows</family>
-                <arch>x86</arch>
-            </os>
-        </activation>
-        <properties>
-            <imguiNatives>imgui-java-natives-windows-x86</imguiNatives>
-            <lwjglNatives>natives-windows-x86</lwjglNatives>
-        </properties>
-    </profile>
-</profiles>
 
 <dependencyManagement>
     <dependencies>
@@ -163,124 +198,163 @@ dependencies {
 </dependencyManagement>
 
 <dependencies>
-    <!-- imgui-java -->
     <dependency>
-        <groupId>io.imgui.java</groupId>
+        <groupId>org.lwjgl</groupId>
+        <artifactId>lwjgl</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.lwjgl</groupId>
+        <artifactId>lwjgl-glfw</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.lwjgl</groupId>
+        <artifactId>lwjgl-opengl</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.lwjgl</groupId>
+        <artifactId>lwjgl</artifactId>
+        <classifier>natives-windows</classifier>
+    </dependency>
+    <dependency>
+        <groupId>org.lwjgl</groupId>
+        <artifactId>lwjgl-glfw</artifactId>
+        <classifier>natives-windows</classifier>
+    </dependency>
+    <dependency>
+        <groupId>org.lwjgl</groupId>
+        <artifactId>lwjgl-opengl</artifactId>
+        <classifier>natives-windows</classifier>
+    </dependency>
+    
+    <dependency>
+        <groupId>io.github.spair</groupId>
         <artifactId>imgui-java-binding</artifactId>
         <version>${imgui.java.version}</version>
     </dependency>
     <dependency>
-        <groupId>io.imgui.java</groupId>
+        <groupId>io.github.spair</groupId>
         <artifactId>imgui-java-lwjgl3</artifactId>
         <version>${imgui.java.version}</version>
     </dependency>
     <dependency>
-        <groupId>io.imgui.java</groupId>
-        <artifactId>${imguiNatives}</artifactId>
+        <groupId>io.github.spair</groupId>
+        <artifactId>imgui-java-natives-windows</artifactId>
         <version>${imgui.java.version}</version>
-    </dependency>
-
-    <!-- LWJGL -->
-    <dependency>
-        <groupId>org.lwjgl</groupId>
-        <artifactId>lwjgl</artifactId>
-    </dependency>
-    <dependency>
-        <groupId>org.lwjgl</groupId>
-        <artifactId>lwjgl-glfw</artifactId>
-    </dependency>
-    <dependency>
-        <groupId>org.lwjgl</groupId>
-        <artifactId>lwjgl-opengl</artifactId>
-    </dependency>
-    <dependency>
-        <groupId>org.lwjgl</groupId>
-        <artifactId>lwjgl</artifactId>
-        <classifier>${lwjglNatives}</classifier>
-    </dependency>
-    <dependency>
-        <groupId>org.lwjgl</groupId>
-        <artifactId>lwjgl-glfw</artifactId>
-        <classifier>${lwjglNatives}</classifier>
-    </dependency>
-    <dependency>
-        <groupId>org.lwjgl</groupId>
-        <artifactId>lwjgl-opengl</artifactId>
-        <classifier>${lwjglNatives}</classifier>
     </dependency>
 </dependencies>
 ```
 </details>
 
 <details>
-        <summary><b>With Raw Jars</b></summary>
+        <summary><b>Raw Jars</b></summary>
 
- - Go to the [release page](https://github.com/SpaiR/imgui-java/releases/latest)
- - Download `imgui-binding-${version}.jar`, `imgui-lwjgl3-${version}.jar` and binary libraries for your OS
+ 1. Go to the [release page](https://github.com/SpaiR/imgui-java/releases/latest);
+ 2. Download `imgui-binding-${version}.jar`, `imgui-lwjgl3-${version}.jar` and binary libraries for your OS;
    - imgui-java.dll - Windows 32bit
    - imgui-java64.dll - Windows 64bit
    - libimgui-java.so - Linux 32bit
    - libimgui-java64.so - Linux 64bit
-   - libimgui-java64.dylib - MacOsX 64bit
- - Add jars to your classpath.
- - Provide a VM option: `imgui.library.path` or `java.library.path`. It should point to the folder where you've placed downloaded native libraries.
+   - libimgui-java64.dylib - MacOS
+ 3. Add jars to your classpath;
+ 4. Provide a VM option: `imgui.library.path` or `java.library.path`. It should point to the folder where you've placed downloaded native libraries.
 </details>
 
-Important!<br>
-If you're using native libs directly, you'll need to provide a VM option: `imgui.library.path` or `java.library.path`. It should point to the folder where you've placed downloaded binaries.
+## Extensions
+- [ImNodes](https://github.com/Nelarius/imnodes/tree/857cc860af05ac0f6a4039c2af33d982377b6cf4) | [Example](https://github.com/SpaiR/imgui-java/blob/v1.82.2/example/src/main/java/ExampleImNodes.java) <br>
+  A small, dependency-free node editor for dear imgui. (A good choice for simple start.)
+- [imgui-node-editor](https://github.com/thedmd/imgui-node-editor/tree/687a72f940c76cf5064e13fe55fa0408c18fcbe4) | [Example](https://github.com/SpaiR/imgui-java/blob/v1.82.2/example/src/main/java/ExampleImGuiNodeEditor.java) <br>
+  Node Editor using ImGui. (A bit more complex than ImNodes, but has more features.)
 
-**You are ready to use imgui-java binding!**
+## Freetype
+By default, Dear ImGui uses stb-truetype to render fonts. Yet there is an option to use FreeType font renderer. Go to the [imgui_freetype](https://github.com/ocornut/imgui/tree/256594575d95d56dda616c544c509740e74906b4/misc/freetype) to read about the difference.
+Binding has this option too. Freetype especially useful when you use custom font with small (~<16px) size. If you use the default font or a large font, stb will be fine for you.
 
-## Using Multi-Viewports and Docking
-Binding based on the Dear ImGui [docking](https://github.com/ocornut/imgui/tree/docking) branch, commit: [682249396f02b8c21e5ff333ab4a1969c89387ad](https://github.com/ocornut/imgui/tree/682249396f02b8c21e5ff333ab4a1969c89387ad).
-That branch contains two important features: [multi-viewports](https://github.com/ocornut/imgui/issues/1542) and [docking](https://github.com/ocornut/imgui/issues/2109).
-See an official documentation about how to work with them.
+There are two types of precompiled binaries: 1. with stb (the default one) 2. with freetype.
+You can decide by yourself, which kind of libraries for any system you want to use.
 
-##### Important!
-Take a note that multi-viewports api is **VERY** complex to implement. It's highly recommended to use `imgui.glfw.ImGuiImplGlfw` class as it's done in the example.
-Otherwise, if you're using your own backed implementation, there are no guarantees it will work.
+Take a not, that for Linux and Mac users using of freetype will add an additional dependency to the `libfreetype` itself.
+This is not the case for Windows users, since `dll` binaries are compiled fully statically and already include freetype in themselves.
 
-## Using FreeType
-Dear ImGui by default uses a stb_strutype library to render a fonts atlas. It's possible to use FreeType instead to get better fonts quality. [Read more](https://github.com/ocornut/imgui/blob/v1.78/misc/freetype/README.md)
+**For fully portable application** use default binaries.<br>
+You can still use freetype binaries for Windows builds without worry though.
 
-## Binding Notice
-* All Dear ImGui methods are available in `camelCase`, not in `PascalCase`.
-* To **pass** `ImVec2`/`ImVec4` - provide two/four float numbers.
-  To **get** `ImVec2`/`ImVec4` - provide a destination object.
-* To get an input/output to/from Dear ImGui - use primitive wrappers: `ImBool`, `ImInt` etc.
-* Due to the Java and JNI restrictions we can't provide a fully fledged callbacks to the `ImGui::InputText` methods.
-  To replace some features use an ImGuiInputTextData class.
-* All classes which are represent Dear ImGui structs have a field with a pointer to those structs.
-  Field is public and could be modified without restrictions. So by changing the pointer it's possible to use the same java class to modify different
-  native structs. Commonly you don't need to mind about that.
-  Just keep in mind that you are able to do advanced stuff with it like: save pointers to the structs to modify them later. 
-* Read [javadoc](https://javadoc.io/doc/io.imgui.java/binding) and sources comments to get more info.
+**For better fonts** use freetype binaries.<br>
+Don't forget to make clear for your Linux/Mac users, that they will need to install freetype on their systems as well.
 
-## How to Build Native Libraries
-Using Windows:
+### How To Use
+- Maven/Gradle:<br>
+  Use the same native libraries as you would, but with `-ft` suffix in the end.
+  
+  | Native Binaries With FreeType     | System        |
+  | --------------------------------- | ------------- |
+  | imgui-java-natives-windows-x86-ft | Windows 32bit |
+  | imgui-java-natives-windows-ft     | Windows 64bit |
+  | imgui-java-natives-linux-x86-ft   | Linux 32bit   |
+  | imgui-java-natives-linux-ft       | Linux 64bit   |
+  | imgui-java-natives-macos-ft       | MacOS         |
+  <details>
+        <summary><b>Modified Gradle Example</b></summary>
+
+    ```
+    repositories {
+        mavenCentral()
+    }
+    
+    ext {
+        lwjglVersion = '3.2.3'
+        imguiVersion = '1.82.2'
+    }
+    
+    dependencies {
+        implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
+    
+        ['', '-opengl', '-glfw'].each {
+            implementation "org.lwjgl:lwjgl$it:$lwjglVersion"
+            implementation "org.lwjgl:lwjgl$it::natives-windows"
+        }
+        
+        implementation "io.github.spair:imgui-java-binding:$imguiVersion"
+        implementation "io.github.spair:imgui-java-lwjgl3:$imguiVersion"
+        
+        // This is the main difference
+        implementation "io.github.spair:imgui-java-natives-windows-ft:$imguiVersion"
+    }
+    ```
+    </details>
+- If you're using raw dll/so files, go to the `bin/freetype` folder and take them from there.
+
+# Binding Notice
+Binding was made with java usage in mind. Some places of the original library were adapted for that.<br>
+For example, in places where in C++ you need to pass a reference value, in Java you pass primitive wrappers: `ImInt`, `ImFloat` etc.<br>
+
+One important thing is how natives structs work. All of them have a public field with a pointer to the natively allocated memory.<br>
+By changing the pointer it's possible to use the same Java instance to work with different native structs.<br>
+Most of the time you can ignore this fact and just work with objects in a common way.
+
+Read [javadoc](https://javadoc.io/doc/io.github.spair/imgui-java-binding) and source comments to get more info about how to do specific stuff.
+
+# How to Build Native Libraries
+### Windows
  - Make sure you have installed and **available in PATH**:
     * Java 8 or higher
     * Ant
     * Mingw-w64 (recommended way: use [MSYS2](https://www.msys2.org/) and install [mingw-w64-x86_64-toolchain](https://packages.msys2.org/group/mingw-w64-x86_64-toolchain) group)
- - Build with: `gradlew :imgui-binding:generateLibs -Denvs=win64 -Dlocal`
- - Run with: `gradlew :imgui-lwjgl3:startExample -DlibPath=../imgui-binding/build/libsNative/windows64`
+ - Build with: `./gradlew :imgui-binding:generateLibs -Denvs=win64 -Dlocal`
+ - Run with: `./gradlew :example:run -DlibPath="../imgui-binding/build/libsNative/windows64"`
  
-Using Linux:
- - Install dependencies: `openjdk8`, `mingw-w64-gcc`, `ant`. (Packages name could vary from system to system.)
+### Linux
+ - Install dependencies: `openjdk8`, `mingw-w64-gcc`, `ant`. (Package names could vary from system to system.)
  - Build with: `./gradlew :imgui-binding:generateLibs -Denvs=linux64 -Dlocal`
- - Run with: `./gradlew :imgui-lwjgl3:startExample -DlibPath=../imgui-binding/build/libsNative/linux64`
+ - Run with: `./gradlew :example:run -DlibPath=../imgui-binding/build/libsNative/linux64`
  
-Using MacOS:
- - Check dependencies from "Using Linux" paragraph and make sure you have them installed.
+### MacOS
+ - Check dependencies from "Linux" section and make sure you have them installed.
  - Build with: `./gradlew :imgui-binding:generateLibs -Denvs=mac64 -Dlocal`
- - Run with: `./gradlew :imgui-lwjgl3:startExample -DlibPath=../imgui-binding/build/libsNative/macosx64`
+ - Run with: `./gradlew :example:run -DlibPath=../imgui-binding/build/libsNative/macosx64`
 
 In `envs` parameter next values could be used `win32`, `win64`, `linux32`, `linux64` or `mac64`.<br>
 `-Dlocal` is optional and means that natives will be built under the `./imgui-binding/build/` folder. Otherwise `/tmp/imgui` folder will be used.
-On Windows OS always use local build.
+On Windows always use local build.
 
-## Credits
-Binding partly based on the work of [xpenatan](https://github.com/xpenatan) and his version [jDear-imgui](https://github.com/xpenatan/jDear-imgui).
-
-## License
+# License
 See the LICENSE file for license rights and limitations (Apache-2.0).

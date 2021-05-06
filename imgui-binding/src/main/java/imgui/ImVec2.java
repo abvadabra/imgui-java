@@ -22,6 +22,16 @@ public final class ImVec2 implements Cloneable {
         this.y = y;
     }
 
+    public void set(final float x, final float y) {
+        this.x = x;
+        this.y = y;
+    }
+
+    public void set(final ImVec2 value) {
+        this.x = value.x;
+        this.y = value.y;
+    }
+
     @Override
     public String toString() {
         return "ImVec2{"

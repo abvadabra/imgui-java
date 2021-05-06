@@ -1,5 +1,7 @@
 package imgui;
 
+import imgui.flag.ImGuiCond;
+import imgui.flag.ImGuiDragDropFlags;
 import imgui.flag.ImGuiInputTextFlags;
 import imgui.type.ImBoolean;
 import imgui.type.ImDouble;
@@ -35,11 +37,11 @@ public class ImGui {
     private static final ImGuiViewport WINDOW_VIEWPORT;
     private static final ImGuiViewport FIND_VIEWPORT;
 
-    private static ImDrawData drawData;
-    private static ImFont font;
-    private static ImGuiStyle style;
-    private static ImGuiViewport mainViewport;
-    private static ImGuiPlatformIO platformIO;
+    private static final ImDrawData DRAW_DATA;
+    private static final ImFont FONT;
+    private static final ImGuiStyle STYLE;
+    private static final ImGuiViewport MAIN_VIEWPORT;
+    private static final ImGuiPlatformIO PLATFORM_IO;
 
     static {
         if (!SKIP_LIB_LOADING) {
@@ -62,13 +64,19 @@ public class ImGui {
             }
         }
 
-        IMGUI_IO = new ImGuiIO();
+        IMGUI_IO = new ImGuiIO(0);
         WINDOW_DRAW_LIST = new ImDrawList(0);
         BACKGROUND_DRAW_LIST = new ImDrawList(0);
         FOREGROUND_DRAW_LIST = new ImDrawList(0);
         IMGUI_STORAGE = new ImGuiStorage(0);
         WINDOW_VIEWPORT = new ImGuiViewport(0);
         FIND_VIEWPORT = new ImGuiViewport(0);
+
+        DRAW_DATA = new ImDrawData(0);
+        FONT = new ImFont(0);
+        STYLE = new ImGuiStyle(0);
+        MAIN_VIEWPORT = new ImGuiViewport(0);
+        PLATFORM_IO = new ImGuiPlatformIO(0);
 
         nInitJni();
         ImFontAtlas.nInit();
@@ -133,11 +141,7 @@ public class ImGui {
     }
 
     /*JNI
-        #include <stdint.h>
-        #include <imgui.h>
-        #include "jni_common.h"
-        #include "jni_callbacks.h"
-        #include "jni_binding_struct.h"
+        #include "_common.h"
      */
 
     private static native void nInitJni(); /*
@@ -175,17 +179,20 @@ public class ImGui {
      * Access the IO structure (mouse/keyboard/gamepad inputs, time, various configuration options/flags).
      */
     public static ImGuiIO getIO() {
+        IMGUI_IO.ptr = nGetIO();
         return IMGUI_IO;
     }
+
+    private static native long nGetIO(); /*
+        return (intptr_t)&ImGui::GetIO();
+    */
 
     /**
      * Access the Style structure (colors, sizes). Always use PushStyleCol(), PushStyleVar() to modify style mid-frame!
      */
     public static ImGuiStyle getStyle() {
-        if (style == null) {
-            style = new ImGuiStyle(nGetStyle());
-        }
-        return style;
+        STYLE.ptr = nGetStyle();
+        return STYLE;
     }
 
     private static native long nGetStyle(); /*
@@ -218,10 +225,8 @@ public class ImGui {
      * Valid after Render() and until the next call to NewFrame(). this is what you have to render.
      */
     public static ImDrawData getDrawData() {
-        if (drawData == null) {
-            drawData = new ImDrawData(nGetDrawData());
-        }
-        return drawData;
+        DRAW_DATA.ptr = nGetDrawData();
+        return DRAW_DATA;
     }
 
     private static native long nGetDrawData(); /*
@@ -515,16 +520,13 @@ public class ImGui {
     */
 
     /**
-     * Get viewport currently associated to the current window.
+     * Get current window position in screen space (useful if you want to do your own drawing via the DrawList API)
      */
-    public static ImGuiViewport getWindowViewport() {
-        WINDOW_VIEWPORT.ptr = nGetWindowViewport();
-        return WINDOW_VIEWPORT;
+    public static ImVec2 getWindowPos() {
+        final ImVec2 value = new ImVec2();
+        getWindowPos(value);
+        return value;
     }
-
-    private static native long nGetWindowViewport(); /*
-        return (intptr_t)ImGui::GetWindowViewport();
-    */
 
     /**
      * Get current window position in screen space (useful if you want to do your own drawing via the DrawList API)
@@ -546,6 +548,15 @@ public class ImGui {
     public static native float getWindowPosY(); /*
         return ImGui::GetWindowPos().y;
     */
+
+    /**
+     * Get current window size
+     */
+    public static ImVec2 getWindowSize() {
+        final ImVec2 value = new ImVec2();
+        getWindowSize(value);
+        return value;
+    }
 
     /**
      * Get current window size
@@ -581,6 +592,18 @@ public class ImGui {
     public static native float getWindowHeight(); /*
         return ImGui::GetWindowHeight();
      */
+
+    /**
+     * Get viewport currently associated to the current window.
+     */
+    public static ImGuiViewport getWindowViewport() {
+        WINDOW_VIEWPORT.ptr = nGetWindowViewport();
+        return WINDOW_VIEWPORT;
+    }
+
+    private static native long nGetWindowViewport(); /*
+        return (intptr_t)ImGui::GetWindowViewport();
+    */
 
     // Prefer using SetNextXXX functions (before Begin) rather that SetXXX functions (after Begin).
 
@@ -793,6 +816,15 @@ public class ImGui {
     /**
      * == GetContentRegionMax() - GetCursorPos()
      */
+    public static ImVec2 getContentRegionAvail() {
+        final ImVec2 value = new ImVec2();
+        getContentRegionAvail(value);
+        return value;
+    }
+
+    /**
+     * == GetContentRegionMax() - GetCursorPos()
+     */
     public static native void getContentRegionAvail(ImVec2 dstImVec2); /*
         Jni::ImVec2Cpy(env, ImGui::GetContentRegionAvail(), dstImVec2);
     */
@@ -810,6 +842,15 @@ public class ImGui {
     public static native float getContentRegionAvailY(); /*
         return ImGui::GetContentRegionAvail().y;
     */
+
+    /**
+     * Current content boundaries (typically window boundaries including scrolling, or current column boundaries), in windows coordinates
+     */
+    public static ImVec2 getContentRegionMax() {
+        final ImVec2 value = new ImVec2();
+        getContentRegionMax(value);
+        return value;
+    }
 
     /**
      * Current content boundaries (typically window boundaries including scrolling, or current column boundaries), in windows coordinates
@@ -835,6 +876,15 @@ public class ImGui {
     /**
      * Content boundaries max (roughly (0,0)+Size-Scroll) where Size can be override with SetNextWindowContentSize(), in window coordinates
      */
+    public static ImVec2 getWindowContentRegionMin() {
+        final ImVec2 value = new ImVec2();
+        getWindowContentRegionMin(value);
+        return value;
+    }
+
+    /**
+     * Content boundaries max (roughly (0,0)+Size-Scroll) where Size can be override with SetNextWindowContentSize(), in window coordinates
+     */
     public static native void getWindowContentRegionMin(ImVec2 dstImVec2); /*
         Jni::ImVec2Cpy(env, ImGui::GetWindowContentRegionMin(), dstImVec2);
     */
@@ -852,6 +902,12 @@ public class ImGui {
     public static native float getWindowContentRegionMinY(); /*
         return ImGui::GetWindowContentRegionMin().y;
     */
+
+    public final ImVec2 getWindowContentRegionMax() {
+        final ImVec2 value = new ImVec2();
+        getWindowContentRegionMax(value);
+        return value;
+    }
 
     public static native void getWindowContentRegionMax(ImVec2 dstImVec2); /*
         Jni::ImVec2Cpy(env, ImGui::GetWindowContentRegionMax(), dstImVec2);
@@ -1061,7 +1117,7 @@ public class ImGui {
 
     /**
      * Push width of items for common large "item+label" widgets. {@code > 0.0f}: width in pixels,
-     * {@code <0.0f} align xx pixels to the right of window (so -1.0f always align width to the right side). 0.0f = default to ~2/3 of windows width,
+     * {@code <0.0f} align xx pixels to the right of window (so -1.0f always align width to the right side).
      */
     public static native void pushItemWidth(float itemWidth); /*
         ImGui::PushItemWidth(itemWidth);
@@ -1112,10 +1168,8 @@ public class ImGui {
      * Get current font.
      */
     public static ImFont getFont() {
-        if (font == null) {
-            font = new ImFont(nGetFont());
-        }
-        return font;
+        FONT.ptr = nGetFont();
+        return FONT;
     }
 
     private static native long nGetFont(); /*
@@ -1128,6 +1182,15 @@ public class ImGui {
     public static native float getFontSize(); /*
         return ImGui::GetFontSize();
     */
+
+    /**
+     * Get UV coordinate for a while pixel, useful to draw custom shapes via the ImDrawList API
+     */
+    public static ImVec2 getFontTexUvWhitePixel() {
+        final ImVec2 value = new ImVec2();
+        getFontTexUvWhitePixel(value);
+        return value;
+    }
 
     /**
      * Get UV coordinate for a while pixel, useful to draw custom shapes via the ImDrawList API
@@ -1179,6 +1242,16 @@ public class ImGui {
     public static native int getColorU32i(int col); /*
         return ImGui::GetColorU32((ImU32)col);
     */
+
+    /**
+     * Retrieve style color as stored in ImGuiStyle structure. use to feed back into PushStyleColor(),
+     * otherwise use GetColorU32() to get style color with style alpha baked in.
+     */
+    public ImVec4 getStyleColorVec4(final int imGuiStyleVar) {
+        final ImVec4 value = new ImVec4();
+        getStyleColorVec4(imGuiStyleVar, value);
+        return value;
+    }
 
     /**
      * Retrieve style color as stored in ImGuiStyle structure. use to feed back into PushStyleColor(),
@@ -1295,6 +1368,15 @@ public class ImGui {
     /**
      * Cursor position in window coordinates (relative to window position)
      */
+    public static ImVec2 getCursorPos() {
+        final ImVec2 value = new ImVec2();
+        getCursorPos(value);
+        return value;
+    }
+
+    /**
+     * Cursor position in window coordinates (relative to window position)
+     */
     public static native void getCursorPos(ImVec2 dstImVec2); /*
         Jni::ImVec2Cpy(env, ImGui::GetCursorPos(), dstImVec2);
     */
@@ -1337,6 +1419,15 @@ public class ImGui {
     /**
      * Initial cursor position in window coordinates
      */
+    public static ImVec2 getCursorStartPos() {
+        final ImVec2 value = new ImVec2();
+        getCursorStartPos(value);
+        return value;
+    }
+
+    /**
+     * Initial cursor position in window coordinates
+     */
     public static native void getCursorStartPos(ImVec2 dstImVec2); /*
         Jni::ImVec2Cpy(env, ImGui::GetCursorStartPos(), dstImVec2);
     */
@@ -1356,30 +1447,46 @@ public class ImGui {
     */
 
     /**
-     * Cursor position in absolute screen coordinates [0..io.DisplaySize] (useful to work with ImDrawList API)
+     * Cursor position in absolute coordinates (useful to work with ImDrawList API).
+     * Generally top-left == GetMainViewport().Pos == (0,0) in single viewport mode,
+     * and bottom-right == GetMainViewport().Pos+Size == io.DisplaySize in single-viewport mode.
+     */
+    public static ImVec2 getCursorScreenPos() {
+        final ImVec2 value = new ImVec2();
+        getCursorScreenPos(value);
+        return value;
+    }
+
+    /**
+     * Cursor position in absolute coordinates (useful to work with ImDrawList API).
+     * Generally top-left == GetMainViewport().Pos == (0,0) in single viewport mode,
+     * and bottom-right == GetMainViewport().Pos+Size == io.DisplaySize in single-viewport mode.
      */
     public static native void getCursorScreenPos(ImVec2 dstImVec2); /*
         Jni::ImVec2Cpy(env, ImGui::GetCursorScreenPos(), dstImVec2);
      */
 
     /**
-     * Cursor position in absolute screen coordinates [0..io.DisplaySize] (useful to work with ImDrawList API)
+     * Cursor position in absolute coordinates (useful to work with ImDrawList API).
+     * Generally top-left == GetMainViewport().Pos == (0,0) in single viewport mode,
+     * and bottom-right == GetMainViewport().Pos+Size == io.DisplaySize in single-viewport mode.
      */
     public static native float getCursorScreenPosX(); /*
         return ImGui::GetCursorScreenPos().x;
     */
 
     /**
-     * Cursor position in absolute screen coordinates [0..io.DisplaySize] (useful to work with ImDrawList API)
+     * Cursor position in absolute coordinates (useful to work with ImDrawList API).
+     * Generally top-left == GetMainViewport().Pos == (0,0) in single viewport mode,
+     * and bottom-right == GetMainViewport().Pos+Size == io.DisplaySize in single-viewport mode.
      */
     public static native float getCursorScreenPosY(); /*
         return ImGui::GetCursorScreenPos().y;
     */
 
     /**
-     * Cursor position in absolute screen coordinates [0..io.DisplaySize]
-     */
-    public static native void setCursorScreenPos(float x, float y); /*
+     * Cursor position in absolute coordinates.
+     */    public static native void setCursorScreenPos(float x, float y); /*
         ImGui::SetCursorScreenPos(ImVec2(x, y));
     */
 
@@ -1738,23 +1845,32 @@ public class ImGui {
         ImGui::EndCombo();
     */
 
-    public static boolean combo(String label, ImInt currentItem, String[] items, int itemsCount) {
-        return nCombo(label, currentItem.getData(), items, itemsCount, -1);
+    public static boolean combo(String label, ImInt currentItem, String[] items) {
+        return nCombo(label, currentItem.getData(), items, items.length, -1);
     }
 
-    public static boolean combo(String label, ImInt currentItem, String[] items, int itemsCount, int popupMaxHeightInItems) {
-        return nCombo(label, currentItem.getData(), items, itemsCount, popupMaxHeightInItems);
+    public static boolean combo(String label, ImInt currentItem, String[] items, int popupMaxHeightInItems) {
+        return nCombo(label, currentItem.getData(), items, items.length, popupMaxHeightInItems);
     }
 
     private static native boolean nCombo(String label, int[] currentItem, String[] items, int itemsCount, int popupMaxHeightInItems); /*
         const int bufferSize = 200;
-        const char* listbox_items[bufferSize];
-        for(int i = 0; i < itemsCount && i < bufferSize; i++) {
+        const char* listboxItems[bufferSize];
+
+        for (int i = 0; i < itemsCount && i < bufferSize; i++) {
             jstring string = (jstring)env->GetObjectArrayElement(items, i);
-            const char* rawString = env->GetStringUTFChars(string, 0);
-            listbox_items[i] = rawString;
+            const char* rawString = env->GetStringUTFChars(string, JNI_FALSE);
+            listboxItems[i] = rawString;
         }
-        return ImGui::Combo(label, &currentItem[0], listbox_items, itemsCount > bufferSize ? bufferSize : itemsCount, popupMaxHeightInItems);
+
+        bool flag = ImGui::Combo(label, &currentItem[0], listboxItems, itemsCount > bufferSize ? bufferSize : itemsCount, popupMaxHeightInItems);
+
+        for (int i = 0; i < itemsCount && i < bufferSize; i++) {
+            jstring string = (jstring)env->GetObjectArrayElement(items, i);
+            env->ReleaseStringUTFChars(string, listboxItems[i]);
+        }
+
+        return flag;
     */
 
     /**
@@ -3709,60 +3825,63 @@ public class ImGui {
     */
 
     // Widgets: List Boxes
+    // - This is essentially a thin wrapper to using BeginChild/EndChild with some stylistic changes.
+    // - The BeginListBox()/EndListBox() api allows you to manage your contents and selection state however you want it, by creating e.g. Selectable() or any items.
+    // - The simplified/old ListBox() api are helpers over BeginListBox()/EndListBox() which are kept available for convenience purpose. This is analoguous to how Combos are created.
+    // - Choose frame width:   size.x > 0.0f: custom  /  size.x < 0.0f or -FLT_MIN: right-align   /  size.x = 0.0f (default): use current ItemWidth
+    // - Choose frame height:  size.y > 0.0f: custom  /  size.y < 0.0f or -FLT_MIN: bottom-align  /  size.y = 0.0f (default): arbitrary default height which can fit ~7 items
 
-    public static void listBox(String label, ImInt currentItem, String[] items, int itemsCount) {
-        nListBox(label, currentItem.getData(), items, itemsCount, -1);
+    /**
+     * Open a framed scrolling region.
+     */
+    public static native boolean beginListBox(String label); /*
+        return ImGui::BeginListBox(label);
+    */
+
+    /**
+     * Open a framed scrolling region.
+     */
+    public static native boolean beginListBox(String label, float sizeX, float sizeY); /*
+        return ImGui::BeginListBox(label, ImVec2(sizeX, sizeY));
+    */
+
+    /**
+     * Only call EndListBox() if BeginListBox() returned true!
+     */
+    public static native void endListBox(); /*
+        ImGui::EndListBox();
+    */
+
+    public static void listBox(String label, ImInt currentItem, String[] items) {
+        nListBox(label, currentItem.getData(), items, items.length, -1);
     }
 
-    public static void listBox(String label, ImInt currentItem, String[] items, int itemsCount, int heightInItems) {
-        nListBox(label, currentItem.getData(), items, itemsCount, heightInItems);
+    public static void listBox(String label, ImInt currentItem, String[] items, int heightInItems) {
+        nListBox(label, currentItem.getData(), items, items.length, heightInItems);
     }
 
     private static native boolean nListBox(String label, int[] currentItem, String[] items, int itemsCount, int heightInItems); /*
         const int bufferSize = 200;
-        const char* listbox_items[bufferSize];
+        const char* listboxItems[bufferSize];
 
-        for(int i = 0; i < itemsCount && i < bufferSize; i++) {
+        for (int i = 0; i < itemsCount && i < bufferSize; i++) {
             jstring string = (jstring)env->GetObjectArrayElement(items, i);
-            const char *rawString = env->GetStringUTFChars(string, 0);
-            listbox_items[i] = rawString;
+            const char* rawString = env->GetStringUTFChars(string, JNI_FALSE);
+            listboxItems[i] = rawString;
         }
 
-        return ImGui::ListBox(label, &currentItem[0], listbox_items, itemsCount > bufferSize ? bufferSize : itemsCount, heightInItems);
-    */
+        bool flag = ImGui::ListBox(label, &currentItem[0], listboxItems, itemsCount > bufferSize ? bufferSize : itemsCount, heightInItems);
 
-    /**
-     * Use if you want to reimplement ListBox() will custom data or interactions.
-     * If the function return true, you can output elements then call ListBoxFooter() afterwards.
-     */
-    public static native boolean listBoxHeader(String label); /*
-        return ImGui::ListBoxHeader(label);
-    */
+        for (int i = 0; i< itemsCount && i < bufferSize; i++) {
+            jstring string = (jstring)env->GetObjectArrayElement(items, i);
+            env->ReleaseStringUTFChars(string, listboxItems[i]);
+        }
 
-    /**
-     * Use if you want to reimplement ListBox() will custom data or interactions.
-     * If the function return true, you can output elements then call ListBoxFooter() afterwards.
-     */
-    public static native boolean listBoxHeader(String label, float sizeX, float sizeY); /*
-        return ImGui::ListBoxHeader(label, ImVec2(sizeX, sizeY));
-    */
-
-    public static native boolean listBoxHeader(String label, int itemsCount); /*
-        return ImGui::ListBoxHeader(label, itemsCount);
-    */
-
-    public static native boolean listBoxHeader(String label, int itemsCount, int heightInItems); /*
-        return ImGui::ListBoxHeader(label, itemsCount, heightInItems);
-    */
-
-    /**
-     * Terminate the scrolling region. Only call ListBoxFooter() if ListBoxHeader() returned true!
-     */
-    public static native void listBoxFooter(); /*
-        ImGui::ListBoxFooter();
+        return flag;
     */
 
     // Widgets: Data Plotting
+    // - Consider using ImPlot (https://github.com/epezent/implot)
 
     public static native void plotLines(String label, float[] values, int valuesCount); /*
         ImGui::PlotLines(label, &values[0], valuesCount);
@@ -3907,23 +4026,23 @@ public class ImGui {
     /**
      * Return true when activated. shortcuts are displayed for convenience but not processed by ImGui at the moment
      */
-    public static native boolean menuItem(String label, String shortcut); /*
-        return ImGui::MenuItem(label, shortcut);
-    */
+    public static boolean menuItem(String label, String shortcut) {
+        return nMenuItem(label, shortcut, false, true);
+    }
 
     /**
      * Return true when activated. shortcuts are displayed for convenience but not processed by ImGui at the moment
      */
-    public static native boolean menuItem(String label, String shortcut, boolean selected); /*
-        return ImGui::MenuItem(label, shortcut, selected);
-    */
+    public static boolean menuItem(String label, String shortcut, boolean selected) {
+        return nMenuItem(label, shortcut, selected, true);
+    }
 
     /**
      * Return true when activated. shortcuts are displayed for convenience but not processed by ImGui at the moment
      */
-    public static native boolean menuItem(String label, String shortcut, boolean selected, boolean enabled); /*
-        return ImGui::MenuItem(label, shortcut, selected, enabled);
-    */
+    public static boolean menuItem(String label, String shortcut, boolean selected, boolean enabled) {
+        return nMenuItem(label, shortcut, selected, enabled);
+    }
 
     /**
      * Return true when activated + toggle (*pSelected) if pSelected != NULL
@@ -3940,10 +4059,41 @@ public class ImGui {
     }
 
     /**
+     * Return true when activated
+     */
+    private static native boolean nMenuItem(String labelObj, String shortcutObj, boolean selected, boolean enabled); /*MANUAL
+        char* label = (char*)env->GetStringUTFChars(labelObj, JNI_FALSE);
+        char* shortcut = NULL;
+        if (shortcutObj != NULL)
+            shortcut = (char*)env->GetStringUTFChars(shortcutObj, JNI_FALSE);
+
+        jboolean result = ImGui::MenuItem(label, shortcut, selected, enabled);
+
+        if (shortcutObj != NULL)
+            env->ReleaseStringUTFChars(shortcutObj, shortcut);
+        env->ReleaseStringUTFChars(labelObj, label);
+
+        return result;
+    */
+
+    /**
      * Return true when activated + toggle (*pSelected) if pSelected != NULL
      */
-    private static native boolean nMenuItem(String label, String shortcut, boolean[] pSelected, boolean enabled); /*
-        return ImGui::MenuItem(label, shortcut, &pSelected[0], enabled);
+    private static native boolean nMenuItem(String labelObj, String shortcutObj, boolean[] pSelectedObj, boolean enabled); /*MANUAL
+        char* label = (char*)env->GetStringUTFChars(labelObj, JNI_FALSE);
+        char* shortcut = NULL;
+        if (shortcutObj != NULL)
+            shortcut = (char*)env->GetStringUTFChars(shortcutObj, JNI_FALSE);
+        bool* pSelected = (bool*)env->GetPrimitiveArrayCritical(pSelectedObj, JNI_FALSE);
+
+        jboolean result = ImGui::MenuItem(label, shortcut, &pSelected[0], enabled);
+
+        env->ReleasePrimitiveArrayCritical(pSelectedObj, pSelected, 0);
+        if (shortcutObj != NULL)
+            env->ReleaseStringUTFChars(shortcutObj, shortcut);
+        env->ReleaseStringUTFChars(labelObj, label);
+
+        return result;
     */
 
     // Tooltips
@@ -4741,8 +4891,8 @@ public class ImGui {
     // Drag and Drop
     // - If you stop calling BeginDragDropSource() the payload is preserved however it won't have a preview tooltip (we currently display a fallback "..." tooltip as replacement)
 
-    private static WeakReference<Object> objectPayloadRef = null;
-    private static final byte[] OBJECT_PAYLOAD_PLACEHOLDER_DATA = new byte[1];
+    private static WeakReference<Object> payloadRef = null;
+    private static final byte[] PAYLOAD_PLACEHOLDER_DATA = new byte[1];
 
     /**
      * Call when the current item is active. If this return true, you can call SetDragDropPayload() + EndDragDropSource()
@@ -4761,46 +4911,44 @@ public class ImGui {
     /**
      * Type is a user defined string of maximum 32 characters. Strings starting with '_' are reserved for dear imgui internal types.
      * <p>
-     * BINDING NOTICE: Alternative for {@link #setDragDropPayload(String, byte[])}.
-     * Using this method any Java object can be used for payload.
-     * Binding layer stores a reference to the object in a form of {@link WeakReference}.
+     * BINDING NOTICE:
+     * Method adopted for Java, so objects are used instead of raw bytes.
+     * Binding stores a reference to the object in a form of {@link WeakReference}.
      */
-    public static boolean setDragDropPayloadObject(String type, Object payload) {
-        return setDragDropPayloadObject(type, payload, 0);
+    public static boolean setDragDropPayload(final String dataType, final Object payload) {
+        return setDragDropPayload(dataType, payload, ImGuiCond.None);
     }
 
     /**
      * Type is a user defined string of maximum 32 characters. Strings starting with '_' are reserved for dear imgui internal types.
      * <p>
-     * BINDING NOTICE: Alternative for {@link #setDragDropPayload(String, byte[], int)}.
-     * Using this method any Java object can be used for payload.
-     * Binding layer stores a reference to the object in a form of {@link WeakReference}.
+     * BINDING NOTICE:
+     * Method adopted for Java, so objects are used instead of raw bytes.
+     * Binding stores a reference to the object in a form of {@link WeakReference}.
      */
-    public static boolean setDragDropPayloadObject(String type, Object payload, int imGuiCond) {
-        if (objectPayloadRef == null || objectPayloadRef.get() != payload) {
-            objectPayloadRef = new WeakReference<>(payload);
+    public static boolean setDragDropPayload(final String dataType, final Object payload, final int imGuiCond) {
+        if (payloadRef == null || payloadRef.get() != payload) {
+            payloadRef = new WeakReference<>(payload);
         }
-        return setDragDropPayload(type, OBJECT_PAYLOAD_PLACEHOLDER_DATA, imGuiCond);
+        return nSetDragDropPayload(dataType, PAYLOAD_PLACEHOLDER_DATA, 1, imGuiCond);
     }
 
     /**
-     * Type is a user defined string of maximum 32 characters. Strings starting with '_' are reserved for dear imgui internal types.
-     * Data is copied and held by imgui.
+     * Binding alternative for {@link #setDragDropPayload(String, Object)}, which uses payload class as a unique identifier.
      */
-    public static boolean setDragDropPayload(String type, byte[] data) {
-        return nSetDragDropPayload(type, data, data.length, 0);
+    public static boolean setDragDropPayload(final Object payload) {
+        return setDragDropPayload(payload, ImGuiCond.None);
     }
 
     /**
-     * Type is a user defined string of maximum 32 characters. Strings starting with '_' are reserved for dear imgui internal types.
-     * Data is copied and held by imgui.
+     * Binding alternative for {@link #setDragDropPayload(String, Object, int)}, which uses payload class as a unique identifier.
      */
-    public static boolean setDragDropPayload(String type, byte[] data, int imGuiCond) {
-        return nSetDragDropPayload(type, data, data.length, imGuiCond);
+    public static boolean setDragDropPayload(final Object payload, final int imGuiCond) {
+        return setDragDropPayload(String.valueOf(payload.getClass().hashCode()), payload, imGuiCond);
     }
 
-    private static native boolean nSetDragDropPayload(String type, byte[] data, int sz, int imGuiCond); /*
-        return ImGui::SetDragDropPayload(type, &data[0], sz, imGuiCond);
+    private static native boolean nSetDragDropPayload(String dataType, byte[] data, int sz, int imGuiCond); /*
+        return ImGui::SetDragDropPayload(dataType, &data[0], sz, imGuiCond);
     */
 
     /**
@@ -4819,49 +4967,57 @@ public class ImGui {
 
     /**
      * Accept contents of a given type. If ImGuiDragDropFlags_AcceptBeforeDelivery is set you can peek into the payload before the mouse button is released.
-     * <p>
-     * BINDING NOTICE: Alternative for {@link #acceptDragDropPayload(String)}.
-     * Use in combination with {@link #setDragDropPayloadObject(String, Object)}.
      */
-    public static Object acceptDragDropPayloadObject(String type) {
-        return acceptDragDropPayloadObject(type, 0);
+    public static <T> T acceptDragDropPayload(final String dataType) {
+        return acceptDragDropPayload(dataType, ImGuiDragDropFlags.None);
     }
 
     /**
-     * Accept contents of a given type. If ImGuiDragDropFlags_AcceptBeforeDelivery is set you can peek into the payload before the mouse button is released.
-     * <p>
-     * BINDING NOTICE: Alternative for {@link #acceptDragDropPayload(String, int)}.
-     * Use in combination with {@link #setDragDropPayloadObject(String, Object)}.
+     * Type safe alternative for {@link #acceptDragDropPayload(String)}, since it checks assignability of the accepted class.
      */
-    public static Object acceptDragDropPayloadObject(String type, int imGuiDragDropFlags) {
-        return nAcceptDragDropPayloadObject(type, imGuiDragDropFlags) ? objectPayloadRef.get() : null;
-    }
-
-    private static native boolean nAcceptDragDropPayloadObject(String type, int imGuiDragDropFlags); /*
-        return ImGui::AcceptDragDropPayload(type, imGuiDragDropFlags) != NULL;
-    */
-
-    /**
-     * Accept contents of a given type. If ImGuiDragDropFlags_AcceptBeforeDelivery is set you can peek into the payload before the mouse button is released.
-     */
-    public static byte[] acceptDragDropPayload(String type) {
-        return nAcceptDragDropPayload(type, 0);
+    public static <T> T acceptDragDropPayload(final String dataType, final Class<T> aClass) {
+        return acceptDragDropPayload(dataType, ImGuiDragDropFlags.None, aClass);
     }
 
     /**
      * Accept contents of a given type. If ImGuiDragDropFlags_AcceptBeforeDelivery is set you can peek into the payload before the mouse button is released.
      */
-    public static byte[] acceptDragDropPayload(String type, int imGuiDragDropFlags) {
-        return nAcceptDragDropPayload(type, imGuiDragDropFlags);
+    public static <T> T acceptDragDropPayload(final String dataType, final int imGuiDragDropFlags) {
+        return acceptDragDropPayload(dataType, imGuiDragDropFlags, null);
     }
 
-    private static native byte[] nAcceptDragDropPayload(String type, int imGuiDragDropFlags); /*
-        if (const ImGuiPayload* payload = ImGui::AcceptDragDropPayload(type, imGuiDragDropFlags)) {
-            jbyteArray array = env->NewByteArray(payload->DataSize);
-            env->SetByteArrayRegion(array, 0, payload->DataSize, (jbyte*)payload->Data);
-            return array;
+    /**
+     * Type safe alternative for {@link #acceptDragDropPayload(String, int)}, since it checks assignability of the accepted class.
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T acceptDragDropPayload(final String dataType, final int imGuiDragDropFlags, final Class<T> aClass) {
+        if (payloadRef != null && nAcceptDragDropPayload(dataType, imGuiDragDropFlags)) {
+            final Object rawPayload = payloadRef.get();
+            if (rawPayload != null) {
+                if (aClass == null || rawPayload.getClass().isAssignableFrom(aClass)) {
+                    return (T) rawPayload;
+                }
+            }
         }
-        return NULL;
+        return null;
+    }
+
+    /**
+     * Binding alternative for {@link #acceptDragDropPayload(String)}, which uses payload class as a unique identifier.
+     */
+    public static <T> T acceptDragDropPayload(final Class<T> aClass) {
+        return acceptDragDropPayload(String.valueOf(aClass.hashCode()), ImGuiDragDropFlags.None, aClass);
+    }
+
+    /**
+     * Binding alternative for {@link #acceptDragDropPayload(String, int)}, which uses payload class as a unique identifier.
+     */
+    public static <T> T acceptDragDropPayload(final Class<T> aClass, final int imGuiDragDropFlags) {
+        return acceptDragDropPayload(String.valueOf(aClass.hashCode()), imGuiDragDropFlags, aClass);
+    }
+
+    private static native boolean nAcceptDragDropPayload(String dataType, int imGuiDragDropFlags); /*
+        return ImGui::AcceptDragDropPayload(dataType, imGuiDragDropFlags) != NULL;
     */
 
     /**
@@ -4872,29 +5028,46 @@ public class ImGui {
     */
 
     /**
-     * Peek directly into the current payload from anywhere. May return NULL. use ImGuiPayload::IsDataType() to test for the payload type.
-     * <p>
-     * BINDING NOTICE: Binding alternative for {@link #getDragDropPayload()}.
-     * Use in combination with {@link #setDragDropPayloadObject(String, Object)}.
+     * Peek directly into the current payload from anywhere. May return NULL.
      */
-    public static Object getDragDropPayloadObject() {
-        return nGetDragDropPayloadObjectObject() ? objectPayloadRef.get() : null;
+    @SuppressWarnings("unchecked")
+    public static <T> T getDragDropPayload() {
+        if (payloadRef != null && nHasDragDropPayload()) {
+            final Object rawPayload = payloadRef.get();
+            if (rawPayload != null) {
+                return (T) rawPayload;
+            }
+        }
+        return null;
     }
 
-    private static native boolean nGetDragDropPayloadObjectObject(); /*
-        return ImGui::GetDragDropPayload() != NULL;
-    */
+    /**
+     * Peek directly into the current payload from anywhere. May return NULL. Checks if payload has the same type as provided.
+     */
+    @SuppressWarnings("unchecked")
+    public static <T> T getDragDropPayload(final String dataType) {
+        if (payloadRef != null && nHasDragDropPayload(dataType)) {
+            final Object rawPayload = payloadRef.get();
+            if (rawPayload != null) {
+                return (T) rawPayload;
+            }
+        }
+        return null;
+    }
 
     /**
-     * Peek directly into the current payload from anywhere. May return NULL. use ImGuiPayload::IsDataType() to test for the payload type.
+     * Binding alternative for {@link #getDragDropPayload(String)}, which uses payload class as a unique identifier.
      */
-    public static native byte[] getDragDropPayload(); /*
-        if (const ImGuiPayload* payload = ImGui::GetDragDropPayload()) {
-            jbyteArray array = env->NewByteArray(payload->DataSize);
-            env->SetByteArrayRegion(array, 0, payload->DataSize, (jbyte*)payload->Data);
-            return array;
-        }
-        return NULL;
+    public static <T> T getDragDropPayload(final Class<T> aClass) {
+        return getDragDropPayload(String.valueOf(aClass.hashCode()));
+    }
+
+    private static native boolean nHasDragDropPayload(); /*
+        return ImGui::GetDragDropPayload()->Data != NULL;
+    */
+
+    private static native boolean nHasDragDropPayload(String dataType); /*
+        return ImGui::GetDragDropPayload()->IsDataType(dataType);
     */
 
     // Clipping
@@ -5048,6 +5221,15 @@ public class ImGui {
     /**
      * Get upper-left bounding rectangle of the last item (screen space)
      */
+    public static ImVec2 getItemRectMin() {
+        final ImVec2 value = new ImVec2();
+        getItemRectMin(value);
+        return value;
+    }
+
+    /**
+     * Get upper-left bounding rectangle of the last item (screen space)
+     */
     public static native void getItemRectMin(ImVec2 dstImVec2); /*
         Jni::ImVec2Cpy(env, ImGui::GetItemRectMin(), dstImVec2);
     */
@@ -5069,6 +5251,15 @@ public class ImGui {
     /**
      * Get lower-right bounding rectangle of the last item (screen space)
      */
+    public static ImVec2 getItemRectMax() {
+        final ImVec2 value = new ImVec2();
+        getItemRectMax(value);
+        return value;
+    }
+
+    /**
+     * Get lower-right bounding rectangle of the last item (screen space)
+     */
     public static native void getItemRectMax(ImVec2 dstImVec2); /*
         Jni::ImVec2Cpy(env, ImGui::GetItemRectMax(), dstImVec2);
     */
@@ -5086,6 +5277,15 @@ public class ImGui {
     public static native float getItemRectMaxY(); /*
         return ImGui::GetItemRectMax().y;
     */
+
+    /**
+     * Get size of last item
+     */
+    public static ImVec2 getItemRectSize() {
+        final ImVec2 value = new ImVec2();
+        getItemRectSize(value);
+        return value;
+    }
 
     /**
      * Get size of last item
@@ -5113,6 +5313,23 @@ public class ImGui {
      */
     public static native void setItemAllowOverlap(); /*
         ImGui::SetItemAllowOverlap();
+    */
+
+    // Viewports
+    // - Currently represents the Platform Window created by the application which is hosting our Dear ImGui windows.
+    // - In 'docking' branch with multi-viewport enabled, we extend this concept to have multiple active viewports.
+    // - In the future we will extend this concept further to also represent Platform Monitor and support a "no main platform window" operation mode.
+
+    /**
+     * Return primary/default viewport.
+     */
+    public static ImGuiViewport getMainViewport() {
+        MAIN_VIEWPORT.ptr = nGetMainViewport();
+        return MAIN_VIEWPORT;
+    }
+
+    private static native long nGetMainViewport(); /*
+        return (intptr_t)ImGui::GetMainViewport();
     */
 
     // Miscellaneous Utilities
@@ -5256,6 +5473,24 @@ public class ImGui {
 
     // Text Utilities
 
+    public final ImVec2 calcTextSize(final String text) {
+        final ImVec2 value = new ImVec2();
+        calcTextSize(value, text);
+        return value;
+    }
+
+    public final ImVec2 calcTextSize(final String text, final boolean hideTextAfterDoubleHash) {
+        final ImVec2 value = new ImVec2();
+        calcTextSize(value, text, hideTextAfterDoubleHash);
+        return value;
+    }
+
+    public final ImVec2 calcTextSize(final String text, final boolean hideTextAfterDoubleHash, final float wrapWidth) {
+        final ImVec2 value = new ImVec2();
+        calcTextSize(value, text, hideTextAfterDoubleHash, wrapWidth);
+        return value;
+    }
+
     public static native void calcTextSize(ImVec2 dstImVec2, String text); /*
         ImVec2 src = ImGui::CalcTextSize(text);
         Jni::ImVec2Cpy(env, src, dstImVec2);
@@ -5277,6 +5512,12 @@ public class ImGui {
     */
 
     // Color Utilities
+
+    public final ImVec4 colorConvertU32ToFloat4(final int in) {
+        final ImVec4 value = new ImVec4();
+        colorConvertU32ToFloat4(in, value);
+        return value;
+    }
 
     public static native void colorConvertU32ToFloat4(int in, ImVec4 dstImVec4); /*
         Jni::ImVec4Cpy(env, ImGui::ColorConvertU32ToFloat4(in), dstImVec4);
@@ -5449,6 +5690,15 @@ public class ImGui {
     /**
      * Shortcut to ImGui::GetIO().MousePos provided by user, to be consistent with other calls
      */
+    public static ImVec2 getMousePos() {
+        final ImVec2 value = new ImVec2();
+        getMousePos(value);
+        return value;
+    }
+
+    /**
+     * Shortcut to ImGui::GetIO().MousePos provided by user, to be consistent with other calls
+     */
     public static native void getMousePos(ImVec2 dstImVec2); /*
         Jni::ImVec2Cpy(env, ImGui::GetMousePos(), dstImVec2);
     */
@@ -5470,6 +5720,15 @@ public class ImGui {
     /**
      * Retrieve backup of mouse position at the time of opening popup we have BeginPopup() into
      */
+    public static ImVec2 getMousePosOnOpeningCurrentPopup() {
+        final ImVec2 value = new ImVec2();
+        getMousePosOnOpeningCurrentPopup(value);
+        return value;
+    }
+
+    /**
+     * Retrieve backup of mouse position at the time of opening popup we have BeginPopup() into
+     */
     public static native void getMousePosOnOpeningCurrentPopup(ImVec2 dstImVec2); /*
         Jni::ImVec2Cpy(env, ImGui::GetMousePosOnOpeningCurrentPopup(), dstImVec2);
     */
@@ -5487,6 +5746,16 @@ public class ImGui {
     public static native float getMousePosOnOpeningCurrentPopupY(); /*
         return ImGui::GetMousePosOnOpeningCurrentPopup().y;
     */
+
+    /**
+     * Return the delta from the initial clicking position while the mouse button is pressed or was just released.
+     * This is locked and return 0.0f until the mouse moves past a distance threshold at least once. If lockThreshold {@code < -1.0f} uses io.MouseDraggingThreshold.
+     */
+    public static ImVec2 getMouseDragDelta() {
+        final ImVec2 value = new ImVec2();
+        getMouseDragDelta(value);
+        return value;
+    }
 
     /**
      * Return the delta from the initial clicking position while the mouse button is pressed or was just released.
@@ -5516,6 +5785,16 @@ public class ImGui {
      * Return the delta from the initial clicking position while the mouse button is pressed or was just released.
      * This is locked and return 0.0f until the mouse moves past a distance threshold at least once. If lockThreshold {@code < -1.0f} uses io.MouseDraggingThreshold.
      */
+    public static ImVec2 getMouseDragDelta(final int button) {
+        final ImVec2 value = new ImVec2();
+        getMouseDragDelta(value, button);
+        return value;
+    }
+
+    /**
+     * Return the delta from the initial clicking position while the mouse button is pressed or was just released.
+     * This is locked and return 0.0f until the mouse moves past a distance threshold at least once. If lockThreshold {@code < -1.0f} uses io.MouseDraggingThreshold.
+     */
     public static native void getMouseDragDelta(ImVec2 dstImVec2, int button); /*
         Jni::ImVec2Cpy(env, ImGui::GetMouseDragDelta(button), dstImVec2);
     */
@@ -5535,6 +5814,16 @@ public class ImGui {
     public static native float getMouseDragDeltaY(int button); /*
         return ImGui::GetMouseDragDelta(button).y;
     */
+
+    /**
+     * Return the delta from the initial clicking position while the mouse button is pressed or was just released.
+     * This is locked and return 0.0f until the mouse moves past a distance threshold at least once. If lockThreshold {@code < -1.0f} uses io.MouseDraggingThreshold.
+     */
+    public static ImVec2 getMouseDragDelta(final int button, final float lockThreshold) {
+        final ImVec2 value = new ImVec2();
+        getMouseDragDelta(value, button, lockThreshold);
+        return value;
+    }
 
     /**
      * Return the delta from the initial clicking position while the mouse button is pressed or was just released.
@@ -5666,28 +5955,12 @@ public class ImGui {
      * Platform/renderer functions, for backend to setup + viewports list.
      */
     public static ImGuiPlatformIO getPlatformIO() {
-        if (platformIO == null) {
-            platformIO = new ImGuiPlatformIO(nGetPlatformIO());
-        }
-        return platformIO;
+        PLATFORM_IO.ptr = nGetPlatformIO();
+        return PLATFORM_IO;
     }
 
     private static native long nGetPlatformIO(); /*
         return (intptr_t)&ImGui::GetPlatformIO();
-    */
-
-    /**
-     * Main viewport. Same as GetPlatformIO().MainViewport == GetPlatformIO().Viewports[0].
-     */
-    public static ImGuiViewport getMainViewport() {
-        if (mainViewport == null) {
-            mainViewport = new ImGuiViewport(nGetMainViewport());
-        }
-        return mainViewport;
-    }
-
-    private static native long nGetMainViewport(); /*
-        return (intptr_t)ImGui::GetMainViewport();
     */
 
     /**

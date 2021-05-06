@@ -3,55 +3,26 @@ import imgui.generate.GenerateLibs
 plugins {
     id 'java'
     id 'checkstyle'
-    id 'com.jfrog.bintray' version '1.8.4'
     id 'maven-publish'
+    id 'signing'
 }
 
 sourceCompatibility = 1.8
 
 dependencies {
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.5.2'
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.5.2")
+    testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.5.2'
 }
 
 test {
     useJUnitPlatform()
 }
 
-assemble.dependsOn clean
-task generateLibs(type: GenerateLibs, dependsOn: assemble)
-
-task sourcesJar(type: Jar, dependsOn: classes) {
-    archiveClassifier.set('sources')
-    from sourceSets.main.allSource
+tasks.register('generateLibs', GenerateLibs) {
+    it.dependsOn assemble
 }
 
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    archiveClassifier.set('javadoc')
-    from javadoc.destinationDir
-}
-
-publishing {
-    publications {
-        MyPublication(MavenPublication) {
-            from components.java
-            groupId 'io.imgui.java'
-            artifactId 'imgui-java-binding'
-            artifact sourcesJar
-            artifact javadocJar
-            version property('version')
-        }
-    }
-}
-
-bintray {
-    user = System.getenv('BINTRAY_USER')
-    key = System.getenv('BINTRAY_API_KEY')
-    publications = ['MyPublication']
-    pkg {
-        repo = 'io.imgui.java'
-        name = 'imgui-java-binding'
-    }
-}
+apply from: "$rootDir/publish.gradle"
+configurePublishing('imgui-java-binding', 'JNI based binding for Dear ImGui')
 
 tasks.jar.dependsOn(sourcesJar)
