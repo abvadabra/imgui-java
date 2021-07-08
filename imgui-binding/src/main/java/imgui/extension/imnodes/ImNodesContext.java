@@ -13,7 +13,7 @@ public final class ImNodesContext extends ImGuiStructDestroyable {
     /*JNI
         #include "_imnodes.h"
 
-        #define IMNODES_CONTEXT ((ImNodesEditorContext*)STRUCT_PTR)
+        #define IMNODES_CONTEXT ((imnodes::EditorContext*)STRUCT_PTR)
      */
 
     @Override

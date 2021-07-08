@@ -4,4 +4,3 @@
 #include <imnodes.h>
 #include "_binding.h"
 
- namespace imnodes = ImNodes;
